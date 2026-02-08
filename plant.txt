@@ -1,0 +1,10 @@
+///sschema 
+user{
+    name:
+    username:
+    email:
+    password:
+    status :enum[online,offline];
+    totalpoints:
+    createdat:
+}
