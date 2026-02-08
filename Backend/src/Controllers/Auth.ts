@@ -4,11 +4,20 @@ import {Request,Response,NextFunction} from 'express'
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 
-interface loginuser extends IUser{
+interface loginbody{
     loginmethod:"email" | "username";
+    email?:string;
+    username?:string;
+    password:string;
 }
-export const login =async (req:Request,res:Response)=>{
-    const user:loginuser= req.body;
+interface registerbody{
+    name:string;
+    username:string;
+    email:string;
+    password:string;
+}
+export const login =async (req:Request,res:Response):Promise<void>=>{
+    const user:loginbody= req.body;
     const {loginmethod,...rest}=user;
     if(loginmethod==="email"){
         if(!rest.email){
@@ -28,12 +37,12 @@ export const login =async (req:Request,res:Response)=>{
         throw new CustomError("Password is required for login",400);
     }
 
-    const userData:IUser= await User.findOne({[loginmethod]:rest[loginmethod]});
+    const userData= await User.findOne({[loginmethod]:rest[loginmethod]});
     if(!userData){
         throw new CustomError("User not found",404);
     }
     const password:string=userData.password;
-    const ismatch =bcrypt.compare(rest.password,password);
+    const ismatch =await bcrypt.compare(rest.password,password);
     if(!ismatch){
         throw new CustomError("Invalid password",401);
     }
@@ -53,12 +62,12 @@ export const login =async (req:Request,res:Response)=>{
 }
 
 
-export const register =async (req:Request,res:Response)=>{
-    const user:IUser=req.body;
+export const register =async (req:Request,res:Response):Promise<void>=>{
+    const user:registerbody=req.body;
     if(!user.name || !user.username || !user.email || !user.password){
         throw new CustomError("All fields are required",400);
     }
-    const existingUser:IUser= await User.findOne({$or:[{email:user.email},{username:user.username}]});
+    const existingUser= await User.findOne({$or:[{email:user.email},{username:user.username}]});
     if(existingUser){
         throw new CustomError("User with this email or username already exists",400);
     }
@@ -74,20 +83,11 @@ export const register =async (req:Request,res:Response)=>{
 
 }
 
-export const logout =async (req:Request,res:Response)=>{
-    const user:IUser=req.body;
-    if(!user.username){
-        throw new CustomError("Username is required for logout",400);
-    }
-    const userData:IUser= await User.findOne({username:user.username});
-    if(!userData){
-        throw new CustomError("User not found",404);
-    }
-    userData.online=false;
-    await userData.save();
+export const logout =async (req:Request,res:Response):Promise<void>=>{
     res.clearCookie("token",{
         httpOnly:true,
-       expires:new Date(0),
+        secure:process.env.NODE_ENV==="production",
+        sameSite:"strict",
     });
     res.status(200).json({
         success:true,
