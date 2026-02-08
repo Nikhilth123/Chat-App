@@ -22,7 +22,7 @@ export const errorHandler = (err:any,req:Request,res:Response,next:NextFunction)
 }
 }
 
-class CustomError extends Error{
+export class CustomError extends Error{
     statuscode:number;
    isoperational:boolean;
    
