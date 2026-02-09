@@ -4,20 +4,9 @@ import {Request,Response,NextFunction} from 'express'
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 
-interface loginbody{
-    loginmethod:"email" | "username";
-    email?:string;
-    username?:string;
-    password:string;
-}
-interface registerbody{
-    name:string;
-    username:string;
-    email:string;
-    password:string;
-}
+
 export const login =async (req:Request,res:Response):Promise<void>=>{
-    const user:loginbody= req.body;
+    const user= req.body;
     const {loginmethod,...rest}=user;
     if(loginmethod==="email"){
         if(!rest.email){
@@ -63,7 +52,7 @@ export const login =async (req:Request,res:Response):Promise<void>=>{
 
 
 export const register =async (req:Request,res:Response):Promise<void>=>{
-    const user:registerbody=req.body;
+    const user=req.body;
     if(!user.name || !user.username || !user.email || !user.password){
         throw new CustomError("All fields are required",400);
     }
