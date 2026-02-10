@@ -1,8 +1,14 @@
 import mongoose, { Document, Schema, Types } from "mongoose";
 
+
+export interface IChartParticipants{
+    Userid: Types.ObjectId;
+    status: 'accepted' | 'pending' | 'blocked';
+}
+
 export interface IChat extends Document {
   isGroupChat: boolean;
-  participants: Types.ObjectId[];
+  participants: IChartParticipants[];
   groupName?: string;
   groupAdmin?: Types.ObjectId;
   createdAt: Date;
@@ -17,10 +23,18 @@ const chatSchema = new Schema<IChat>(
     },
     participants: [
       {
+        Userid: {
         type: Schema.Types.ObjectId,
         ref: "User",
         required: true,
-      },
+        },
+      
+        status: {
+          type: String,
+          enum: ["accepted", "pending", "blocked"], 
+          required: true,
+      }
+    }
     ],
     groupName: {
       type: String,
