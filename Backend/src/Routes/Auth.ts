@@ -9,6 +9,7 @@ const router = express.Router();
 // const asyncHandler = (fn:asyncFunction) => (req:Request,res:Response,next:NextFunction):void => {
 //     Promise.resolve(fn(req,res,next)).catch(next);
 // }
+console.log("auth route is being called");  
 
 router.post('/login',asyncHandler(login));
 

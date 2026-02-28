@@ -4,7 +4,7 @@ import {Request,Response,NextFunction} from 'express'
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 
-
+console.log("auth controller is being called");
 export const login =async (req:Request,res:Response):Promise<void>=>{
     const user= req.body;
     const {loginmethod,...rest}=user;
