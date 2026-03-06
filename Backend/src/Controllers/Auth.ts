@@ -3,6 +3,8 @@ import {errorHandler,CustomError} from '../Middlewares/errormiddlewares'
 import {Request,Response,NextFunction} from 'express'
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
+import dotenv from 'dotenv';
+dotenv.config();
 
 console.log("auth controller is being called");
 export const login =async (req:Request,res:Response):Promise<void>=>{
@@ -34,7 +36,8 @@ export const login =async (req:Request,res:Response):Promise<void>=>{
     const ismatch =await bcrypt.compare(rest.password,password);
     if(!ismatch){
         throw new CustomError("Invalid password",401);
-    }
+    }   
+   
     const token:string=jwt.sign({username:userData.username},process.env.JWT_SECRET_KEY as string,{expiresIn:"24h"});
     res.cookie("token",token,{
         httpOnly:true,

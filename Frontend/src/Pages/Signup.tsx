@@ -5,7 +5,6 @@ import {
   Card,
   CardAction,
   CardContent,
-  CardDescription,
   CardFooter,
   CardHeader,
   CardTitle,
@@ -14,19 +13,21 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 
 
-export function Login(): JSX.Element {
+export function Signup(): JSX.Element {
 const [email, setEmail] = useState<string>("");
 const [password, setPassword] = useState<string>("");
+const [username,setusername]=useState<string>("")
+const [name,setname]=useState<string>("")
   const handleSubmit = async() => {
     console.log("handle submit is being called");
     try {   
       console.log("request is being sent");
-      const response = await fetch('http://localhost:3000/api/auth/login', {
+      const response = await fetch('http://localhost:3000/api/auth/register', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ loginmethod:"email",email, password }),
+        body: JSON.stringify({name,username,email, password }),
       });
       const data = await response.json();
       console.log(data);
@@ -42,18 +43,32 @@ const [password, setPassword] = useState<string>("");
     <Card className="w-full max-w-sm">
       <CardHeader>
         <ThemeToggle />
-        <CardTitle>Login to your account</CardTitle>
-        <CardDescription>
-          Enter your email below to login to your account
-        </CardDescription>
+        <CardTitle>Register yourself for using App</CardTitle>
+        
         <CardAction>
-          <Button variant="link">Sign Up</Button>
+          <Button variant="link">Login</Button>
         </CardAction>
       </CardHeader>
       <CardContent>
         <form>
           <div className="flex flex-col gap-6">
             <div className="grid gap-2">
+                <Label htmlFor="email">Name</Label>
+              <Input
+                id="name"
+                type="text"
+                placeholder="Enter your name"
+                onChange={(e)=>{setname(e.target.value)}}
+                required
+              />
+              <Label htmlFor="Username">Username</Label>
+              <Input
+                id="username"
+                type="text"
+                placeholder="Enter your UserName"
+                onChange={(e)=>{setusername(e.target.value)}}
+                required
+              />
               <Label htmlFor="email">Email</Label>
               <Input
                 id="email"
@@ -75,10 +90,10 @@ const [password, setPassword] = useState<string>("");
       </CardContent>
       <CardFooter className="flex-col gap-2">
         <Button type="submit" className="w-full"  onClick={handleSubmit} >
-          Login
+          Register
         </Button>
         <Button variant="outline" className="w-full">
-          Login with Google
+          Register with Google
         </Button>
       </CardFooter>
     </Card>
