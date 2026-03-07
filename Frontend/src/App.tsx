@@ -16,8 +16,18 @@
         <Route element={<MainLayout></MainLayout>}>
         <Route path='/' element={<Home></Home>}></Route>
         <Route path='/chat' element={<ChatListLayout></ChatListLayout>}>
-        <Route path='nik' element={<ChatLayout></ChatLayout>}/>
+        <Route path=':id' element={<ChatLayout></ChatLayout>}/>
         </Route>
+        <Route path='/call' element={<ChatListLayout></ChatListLayout>}>
+        <Route path=':id' element={<ChatLayout></ChatLayout>}/>
+        </Route>
+        <Route path='/videocall' element={<ChatListLayout></ChatListLayout>}>
+        <Route path=':id' element={<ChatLayout></ChatLayout>}/>
+        </Route>
+        <Route path='/groupchat' element={<ChatListLayout></ChatListLayout>}>
+        <Route path=':id' element={<ChatLayout></ChatLayout>}/>
+        </Route>
+        <Route path='/profile'/>
         </Route>
         <Route path='/login'element={ <Login />}></Route>
         <Route path='signup' element={<Signup></Signup>}/>
