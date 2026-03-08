@@ -1,16 +1,20 @@
-import React from "react";
-import { Outlet } from "react-router-dom";
-import {ChatHeader} from '../components/ChatHeader'
-import {ChatInput} from '../components/ChatInput'
-function ChatLayout(): React.ReactElement {
-  return (  
-    <div className="flex flex-col min-h-screen">
-        <ChatHeader></ChatHeader>
-        <div className="flex-1">
-            <Outlet></Outlet>
-        </div>
-        <ChatInput></ChatInput>
+import { useParams } from "react-router-dom"
+import { ChatHeader } from "../components/message/MessageHeader"
+import { MessagesContainer } from "../components/message/MessageContainer"
+import { MessageInput } from "../components/message/MessageInput"
+export function ChatLayout() {
+
+  const { id } = useParams()
+
+  return (
+    <div className="flex flex-col h-screen w-full">
+
+      <ChatHeader chatId={id} />
+
+      <MessagesContainer />
+
+      <MessageInput />
+
     </div>
   )
 }
-export { ChatLayout}
