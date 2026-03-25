@@ -13,7 +13,7 @@ export  function ChatList() {
   ]
 
   return (
-    <div className="w-80 border-r border-border flex flex-col h-screen bg-background">
+    <div className="w-80 border-r border-border flex flex-col h-screen bg-background w-full">
 
       
       <div className="flex items-center justify-between p-4 border-b border-border">
