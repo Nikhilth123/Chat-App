@@ -37,6 +37,7 @@ export const login =async (req:Request,res:Response):Promise<void>=>{
     if(!ismatch){
         throw new CustomError("Invalid password",401);
     }   
+    console.log("secret key is :",process.env.JWT_SECRET_KEY);
    
     const token:string=jwt.sign({username:userData.username},process.env.JWT_SECRET_KEY as string,{expiresIn:"24h"});
     res.cookie("token",token,{
