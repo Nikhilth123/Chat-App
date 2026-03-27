@@ -12,11 +12,16 @@ import {
 } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-
+import { useAppDispatch,useAppSelector } from '@/hooks/reduxhooks'
+import { setCredentials } from '@/redux/slice/authslice'
+import { useNavigate } from 'react-router-dom'
 
 export function Login(): JSX.Element {
 const [email, setEmail] = useState<string>("");
 const [password, setPassword] = useState<string>("");
+const dispatch=useAppDispatch();
+const user=useAppSelector((state)=>state.auth.user);
+const navigate=useNavigate();
   const handleSubmit = async() => {
     console.log("handle submit is being called");
     try {   
@@ -29,6 +34,10 @@ const [password, setPassword] = useState<string>("");
         body: JSON.stringify({ loginmethod:"email",email, password }),
       });
       const data = await response.json();
+      dispatch(setCredentials({
+        user:{name:data.user.name,email:data.user.email,_id:data.user._id,username:data.user.username}
+      }))
+      navigate('/');
       console.log(data);
     } catch (error) {
       console.error('Error:', error);
@@ -47,7 +56,7 @@ const [password, setPassword] = useState<string>("");
           Enter your email below to login to your account
         </CardDescription>
         <CardAction>
-          <Button variant="link">Sign Up</Button>
+          <Button variant="link" onClick={()=>navigate('/signup')}>Sign Up</Button>
         </CardAction>
       </CardHeader>
       <CardContent>

@@ -50,6 +50,7 @@ export const login =async (req:Request,res:Response):Promise<void>=>{
     await userData.save();
     res.status(200).json({
         success:true,
+        user:userData,
         message:"Login successful",
     });
 }

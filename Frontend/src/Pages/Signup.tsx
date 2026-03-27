@@ -12,16 +12,20 @@ import {
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 
-
+import { useNavigate } from 'react-router-dom'
 export function Signup(): JSX.Element {
 const [email, setEmail] = useState<string>("");
 const [password, setPassword] = useState<string>("");
 const [username,setusername]=useState<string>("")
 const [name,setname]=useState<string>("")
+const navigate=useNavigate();
+
+
+
+
   const handleSubmit = async() => {
-    console.log("handle submit is being called");
+    
     try {   
-      console.log("request is being sent");
       const response = await fetch('http://localhost:3000/api/auth/register', {
         method: 'POST',
         headers: {
@@ -30,12 +34,12 @@ const [name,setname]=useState<string>("")
         body: JSON.stringify({name,username,email, password }),
       });
       const data = await response.json();
-      console.log(data);
+      
+      console.log("data:",data);
+      navigate('/login');
     } catch (error) {
       console.error('Error:', error);
     }
-
-
   }
 
   return (
@@ -46,7 +50,7 @@ const [name,setname]=useState<string>("")
         <CardTitle>Register yourself for using App</CardTitle>
         
         <CardAction>
-          <Button variant="link">Login</Button>
+          <Button variant="link" onClick={()=>navigate('/login')}>Login</Button>
         </CardAction>
       </CardHeader>
       <CardContent>
