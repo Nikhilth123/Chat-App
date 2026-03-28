@@ -9,7 +9,7 @@ interface Message {
 
 interface MessageState {
   messages: Record<string, Message[]>; 
-  // chatId -> messages[]
+ 
 }
 
 const initialState: MessageState = {

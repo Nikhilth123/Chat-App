@@ -1,6 +1,8 @@
-import { useState, type JSX } from 'react'
+import { useState,useEffect, type JSX } from 'react'
 import { ThemeToggle } from "@/components/Themetoggle"
 import { Button } from "@/components/ui/button"
+import { connectsocket,disconnectsocket } from '@/services/socket'
+import { initSocketListeners } from '@/services/socketlistener'
 import {
   Card,
   CardAction,
@@ -23,7 +25,6 @@ const dispatch=useAppDispatch();
 const user=useAppSelector((state)=>state.auth.user);
 const navigate=useNavigate();
   const handleSubmit = async() => {
-    console.log("handle submit is being called");
     try {   
       console.log("request is being sent");
       const response = await fetch('http://localhost:3000/api/auth/login', {
@@ -45,6 +46,16 @@ const navigate=useNavigate();
 
 
   }
+   useEffect(() => {
+    if (user?._id) {
+      connectsocket(user._id);
+      initSocketListeners();
+    }
+
+    return () => {
+      disconnectsocket();
+    };
+  }, [user]);
 
   return (
     <div className="flex min-h-screen items-center justify-center">
