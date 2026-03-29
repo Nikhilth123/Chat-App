@@ -8,11 +8,12 @@ import http from "http";
 import { socketstart } from './socket/socketHandler';
 import chat from './Routes/chat'
 import cookieParser from "cookie-parser";
+import user from './Routes/user'
 const app:Application = express();
 app.use(express.json());
 app.use(cookieParser());
 app.use(cors({
-  origin: 'http://localhost:5173',
+  origin: 'http://localhost:5175',
   methods: ['GET', 'POST', 'PUT', 'DELETE'],
   credentials: true,
 }));
@@ -26,13 +27,14 @@ connectDB()
 app.use(urlencoded({extended:true}));
 app.use('/api/auth',Auth);
 app.use('/api/chats',chat);
+app.use('/api/user',user);
 
 
 app.use(errorHandler);
 const server=http.createServer(app);
 const io=new Server(server,{
   cors:{
-    origin:"http://localhost:5173",
+    origin:"http://localhost:5175",
     credentials:true
   },
 });
