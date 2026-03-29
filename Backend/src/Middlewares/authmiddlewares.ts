@@ -15,7 +15,9 @@ declare global {
 
 
 export const authMiddleware=async (req:Request,res:Response,next:NextFunction):Promise<void>=>{
+  console.log("token hai",req.cookies.token);
     const token=req.cookies.token;
+    console.log("token is:",token);
     if(!token){
         throw new CustomError("Unauthorized: No token provided",401);
     }

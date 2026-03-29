@@ -29,6 +29,7 @@ const navigate=useNavigate();
       console.log("request is being sent");
       const response = await fetch('http://localhost:3000/api/auth/login', {
         method: 'POST',
+        credentials:"include",  
         headers: {
           'Content-Type': 'application/json',
         },
@@ -39,6 +40,8 @@ const navigate=useNavigate();
         user:{name:data.user.name,email:data.user.email,_id:data.user._id,username:data.user.username}
       }))
       navigate('/');
+      connectsocket(data.user._id);
+      initSocketListeners();
       console.log(data);
     } catch (error) {
       console.error('Error:', error);
@@ -46,16 +49,16 @@ const navigate=useNavigate();
 
 
   }
-   useEffect(() => {
-    if (user?._id) {
-      connectsocket(user._id);
-      initSocketListeners();
-    }
+  //  useEffect(() => {
+  //   if (user?._id) {
+  //     connectsocket(user._id);
+      
+  //   }
 
-    return () => {
-      disconnectsocket();
-    };
-  }, [user]);
+  //   return () => {
+  //     disconnectsocket();
+  //   };
+  // }, [user]);
 
   return (
     <div className="flex min-h-screen items-center justify-center">

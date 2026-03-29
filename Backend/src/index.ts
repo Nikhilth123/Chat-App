@@ -6,8 +6,11 @@ import connectDB from './Config/db';
 import { Server } from 'socket.io';
 import http from "http";
 import { socketstart } from './socket/socketHandler';
+import chat from './Routes/chat'
+import cookieParser from "cookie-parser";
 const app:Application = express();
 app.use(express.json());
+app.use(cookieParser());
 app.use(cors({
   origin: 'http://localhost:5173',
   methods: ['GET', 'POST', 'PUT', 'DELETE'],
@@ -22,6 +25,7 @@ connectDB()
 });
 app.use(urlencoded({extended:true}));
 app.use('/api/auth',Auth);
+app.use('/api/chats',chat);
 
 
 app.use(errorHandler);
@@ -33,6 +37,8 @@ const io=new Server(server,{
   },
 });
 socketstart(io);
-app.listen(3000, () => {
+server.listen(3000, () => {
   console.log('Server is running on port 3000');
 });
+
+

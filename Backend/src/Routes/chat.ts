@@ -7,3 +7,4 @@ const router = express.Router();
 router.post("/create", authMiddleware, asyncHandler(createChat));
 
 router.get("/my-chats", authMiddleware, asyncHandler(getUserChats));
+export default router;

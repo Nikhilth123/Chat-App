@@ -12,6 +12,7 @@ export const socketstart=(io:Server)=>{
         });
 
         socket.on("sendmessage",async(receiverid,message)=>{
+            console.log("message receive for  user id  ",receiverid,"message is",message)
             const receiversocketid=await redis.get(`user:${receiverid}`);
             if(receiversocketid){
                 io.to(receiversocketid).emit("receiveMessage",message);

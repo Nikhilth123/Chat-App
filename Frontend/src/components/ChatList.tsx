@@ -3,14 +3,29 @@ import { ScrollArea } from "@/components/ui/scroll-area"
 import { Button } from "@/components/ui/button"
 import { Plus } from "lucide-react"
 import ChatItem from "./ChatItem"
+import { useEffect} from "react"
+import { useAppSelector } from "@/hooks/reduxhooks"
 
 export  function ChatList() {
+  const chat =useAppSelector((state)=>state.chat.user);
 
-  const chats = [
-    { id: "1", name: "John", lastMessage: "Hey bro", unread: 2 },
-    { id: "2", name: "Alice", lastMessage: "Meeting tomorrow", unread: 0 },
-    { id: "3", name: "David", lastMessage: "Send the file", unread: 4 }
-  ]
+  const fetchallchats=async()=>{
+    try{
+    const res=await fetch('http://localhost:3000/api/chats/my-chats',{
+      method:"GET",
+      credentials:"include",
+    })
+    const data=await res.json();
+    console.log(data);
+  }
+  catch(err){
+    console.log(err);
+  }
+  }
+useEffect(()=>{
+  fetchallchats();
+},[])
+
 
   return (
     <div className="w-80 border-r border-border flex flex-col h-screen bg-background w-full">

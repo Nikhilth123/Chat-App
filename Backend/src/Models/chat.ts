@@ -2,8 +2,12 @@ import mongoose, { Document, Schema, Types } from "mongoose";
 
 
 export interface IChartParticipants{
-    Userid: Types.ObjectId;
+    userId: Types.ObjectId;
     status: 'accepted' | 'pending' | 'blocked';
+}
+export interface IMessageStatus{
+  userId:Types.ObjectId;
+  status:'sent'|'delivered'|'seen';
 }
 
 export interface IChat extends Document {
@@ -11,6 +15,7 @@ export interface IChat extends Document {
   participants: IChartParticipants[];
   groupName?: string;
   groupAdmin?: Types.ObjectId;
+  lastMessage?:Types.ObjectId;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -23,16 +28,17 @@ const chatSchema = new Schema<IChat>(
     },
     participants: [
       {
-        Userid: {
+        userId: {
         type: Schema.Types.ObjectId,
         ref: "User",
         required: true,
+        index:true,
         },
       
         status: {
           type: String,
           enum: ["accepted", "pending", "blocked"], 
-          required: true,
+          default:"pending",
       }
     }
     ],
@@ -44,6 +50,10 @@ const chatSchema = new Schema<IChat>(
       type: Schema.Types.ObjectId,
       ref: "User",
     },
+     lastMessage: {
+      type: Types.ObjectId,
+      ref: "Message",
+    },
   },
   { timestamps: true }
 );
@@ -52,7 +62,7 @@ export interface IMessage extends Document {
   chatId: Types.ObjectId;
   sender: Types.ObjectId;
   content: string;
-  seenBy: Types.ObjectId[];
+  status:IMessageStatus[];
   createdAt: Date;
   updatedAt: Date;
 }
@@ -75,11 +85,19 @@ const messageSchema = new Schema<IMessage>(
       required: true,
       trim: true,
     },
-    seenBy: [
-      {
-        type: Schema.Types.ObjectId,
-        ref: "User",
+    status:[
+     {
+      userId:{
+        type:Types.ObjectId,
+        ref:"User",
+        required:true,
       },
+      status:{
+        type:String,
+        enum:["sent","delivered","seen"],
+        default:"sent",
+      },
+     }
     ],
   },
   { timestamps: true }
