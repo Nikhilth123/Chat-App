@@ -15,7 +15,7 @@
                 throw new CustomError("Email is required for login",400);
             }   
     }
-        else if(loginmethod==="username"){
+        else if(loginmethod==="userName"){
             if(!rest.username){
                 throw new CustomError("Username is required for login",400);
             }
@@ -39,7 +39,7 @@
         }   
         console.log("secret key is :",process.env.JWT_SECRET_KEY);
     
-        const token:string=jwt.sign({username:userData.username},process.env.JWT_SECRET_KEY as string,{expiresIn:"24h"});
+        const token:string=jwt.sign({userName:userData.userName},process.env.JWT_SECRET_KEY as string,{expiresIn:"24h"});
         res.cookie("token",token,{
             httpOnly:true,
             secure:false,
@@ -58,10 +58,11 @@
 
     export const register =async (req:Request,res:Response):Promise<void>=>{
         const user=req.body;
-        if(!user.name || !user.username || !user.email || !user.password){
+        console.log(user);
+        if(!user.name || !user.userName || !user.email || !user.password){
             throw new CustomError("All fields are required",400);
         }
-        const existingUser= await User.findOne({$or:[{email:user.email},{username:user.username}]});
+        const existingUser= await User.findOne({$or:[{email:user.email},{username:user.userName}]});
         if(existingUser){
             throw new CustomError("User with this email or username already exists",400);
         }

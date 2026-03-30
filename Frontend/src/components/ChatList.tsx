@@ -4,8 +4,8 @@ import { Button } from "@/components/ui/button"
 import { Plus } from "lucide-react"
 import ChatItem from "./ChatItem"
 import { useEffect, useState} from "react"
-import { useAppSelector } from "@/hooks/reduxhooks"
-import { setChats } from "@/redux/slice/chatslice"
+import { useAppDispatch, useAppSelector } from "@/hooks/reduxhooks"
+
 
 import {
   Sheet,
@@ -15,6 +15,7 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet"
+import { setChats,addChat } from "@/redux/slice/chatslice"
 import { Check, Loader2 } from "lucide-react";
 export  function ChatList() {
   const chats =useAppSelector((state)=>state.chat.chats);
@@ -22,6 +23,7 @@ export  function ChatList() {
   const [user,setuser]=useState([]);
   const [selecteduser,setselecteduser]=useState<any>(null);
   const [loading,setloading]=useState<boolean>(false);
+  const dispatch=useAppDispatch();
   const fetchallchats=async()=>{
     try{
     const res=await fetch('http://localhost:3000/api/chats/my-chats',{
@@ -29,8 +31,9 @@ export  function ChatList() {
       credentials:"include",
     })
     const data=await res.json();
-
-    console.log(data);
+    dispatch(setChats(data.chats));
+    console.log("chats:",data.chats);
+    
   }
 
   catch(err){
@@ -57,13 +60,14 @@ export  function ChatList() {
   const createchat=async()=>{
     if(!selecteduser)return;
     try{
-      const res=await fetch(`http://localhost:3000/api/chat/create/${selecteduser._id}`,{
+      const res=await fetch(`http://localhost:3000/api/chats/create/${selecteduser._id}`,{
         method:"POST",
         credentials:"include",
       })
       const data=await res.json();
-      console.log(data);
-      
+      console.log("add chat:",data);
+     // dispatch(addChat(data));
+      console.log("ch=",chats)
     }
     catch(err){
       console.log(err);
@@ -160,12 +164,12 @@ return ()=>clearTimeout(delay)
         <div className="flex items-center gap-3">
           {/* Avatar */}
           <div className="w-10 h-10 rounded-full bg-gray-300 flex items-center justify-center text-sm font-semibold">
-            {u.username[0].toUpperCase()}
+            {u.userName[0].toUpperCase()}
           </div>
 
           {/* Name */}
           <div className="flex flex-col">
-            <span className="font-medium">{u.username}</span>
+            <span className="font-medium">{u.userName}</span>
             <span className="text-xs text-muted-foreground">
               Click to select
             </span>
@@ -188,7 +192,7 @@ return ()=>clearTimeout(delay)
       onClick={createchat}
     >
       {selecteduser
-        ? `Start chat with ${selecteduser.username}`
+        ? `Start chat with ${selecteduser.userName}`
         : "Select a user"}
     </Button>
   </div>

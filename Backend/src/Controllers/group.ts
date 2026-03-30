@@ -70,7 +70,7 @@ export const removeGroupParticipants = async (req: Request, res: Response) => {
     if (!groupChat) {
         throw new CustomError("Group chat not found or you are not the admin", 404);
     }
-    groupChat.participants = groupChat.participants.filter(participant => !participantIds.includes(participant.Userid.toString()));
+    groupChat.participants = groupChat.participants.filter(participant => !participantIds.includes(participant.userId.toString()));
     await groupChat.save();
     res.status(200).json({
         success: true,

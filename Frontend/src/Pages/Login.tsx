@@ -37,7 +37,7 @@ const navigate=useNavigate();
       });
       const data = await response.json();
       dispatch(setCredentials({
-        user:{name:data.user.name,email:data.user.email,_id:data.user._id,username:data.user.username}
+        user:{name:data.user.name,email:data.user.email,_id:data.user._id,userName:data.user.userName}
       }))
       navigate('/');
       connectsocket(data.user._id);

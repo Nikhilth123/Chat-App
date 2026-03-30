@@ -16,7 +16,7 @@ import { useNavigate } from 'react-router-dom'
 export function Signup(): JSX.Element {
 const [email, setEmail] = useState<string>("");
 const [password, setPassword] = useState<string>("");
-const [username,setusername]=useState<string>("")
+const [userName,setuserName]=useState<string>("")
 const [name,setname]=useState<string>("")
 const navigate=useNavigate();
 
@@ -31,7 +31,7 @@ const navigate=useNavigate();
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({name,username,email, password }),
+        body: JSON.stringify({name,userName,email, password }),
       });
       const data = await response.json();
       
@@ -65,12 +65,12 @@ const navigate=useNavigate();
                 onChange={(e)=>{setname(e.target.value)}}
                 required
               />
-              <Label htmlFor="Username">Username</Label>
+              <Label htmlFor="userName">userName</Label>
               <Input
-                id="username"
+                id="userName"
                 type="text"
-                placeholder="Enter your UserName"
-                onChange={(e)=>{setusername(e.target.value)}}
+                placeholder="Enter your userName"
+                onChange={(e)=>{setuserName(e.target.value)}}
                 required
               />
               <Label htmlFor="email">Email</Label>

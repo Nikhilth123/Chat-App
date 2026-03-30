@@ -1,9 +1,14 @@
 import { Avatar, AvatarFallback } from "@/components/ui/avatar"
 import { Badge } from "@/components/ui/badge"
 import { NavLink } from "react-router-dom"
-
+import { useAppSelector } from "@/hooks/reduxhooks";
 export default function ChatItem({ chat }: any) {
-
+  const user=useAppSelector((state)=>(state.auth.user))
+  if(!user)return null;
+ const otherUser = chat.participants.find(
+  (p: any) => p?.userId?.userName !== user?.userName
+);
+  console.log("item=",chat);
   return (
     <NavLink
       to={`/chat/${chat.id}`}
@@ -15,7 +20,7 @@ export default function ChatItem({ chat }: any) {
 
       <Avatar>
         <AvatarFallback>
-          {chat.name[0]}
+          {otherUser?.userId?.userName?.[0] || "?"}
         </AvatarFallback>
       </Avatar>
 

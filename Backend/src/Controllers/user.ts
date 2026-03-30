@@ -9,7 +9,7 @@ export async function getuser(req:Request,res:Response){
                 throw new CustomError('search query is required',400);
             }
             const users=await User.find({
-                username:{$regex:searchstring,$options:'i'}
+                userName:{$regex:searchstring,$options:'i'}
             });
             return res.status(200).json({
                 success:true,

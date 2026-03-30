@@ -29,7 +29,7 @@ const chatSchema = new Schema<IChat>(
     participants: [
       {
         userId: {
-        type: Schema.Types.ObjectId,
+        type: String,
         ref: "User",
         required: true,
         index:true,
