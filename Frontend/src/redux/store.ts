@@ -1,5 +1,5 @@
 import { configureStore } from '@reduxjs/toolkit'
-import authreducer from './slice/chatslice'
+import authreducer from './slice/authslice'
 import messagereducer from './slice/messageslice'
 import chatreducer from './slice/chatslice'
 import socketreducer from './slice/socketslice'
@@ -10,6 +10,7 @@ const store = configureStore({
     message:messagereducer,
     socket:socketreducer,
   },
+  devTools:true,
 })
 
 export default store;

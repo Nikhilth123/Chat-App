@@ -5,7 +5,7 @@ import { MessageInput } from "../components/message/MessageInput"
 
 export function ChatLayout() {
 
-  const { id } = useParams()
+  const { id } = useParams();
 
   return (
     <div className="flex flex-col h-full w-full">

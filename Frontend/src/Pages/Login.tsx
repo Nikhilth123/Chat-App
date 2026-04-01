@@ -36,12 +36,10 @@ const navigate=useNavigate();
         body: JSON.stringify({ loginmethod:"email",email, password }),
       });
       const data = await response.json();
-      dispatch(setCredentials({
-        user:{name:data.user.name,email:data.user.email,_id:data.user._id,userName:data.user.userName}
-      }))
-      navigate('/');
-      connectsocket(data.user._id);
-      initSocketListeners();
+     const { password_, ...safeUser } = data.user;
+
+dispatch(setCredentials(safeUser));
+     
       console.log(data);
     } catch (error) {
       console.error('Error:', error);
@@ -49,6 +47,13 @@ const navigate=useNavigate();
 
 
   }
+  useEffect(() => {
+  if (user?._id) {
+    connectsocket(user._id);
+    initSocketListeners();
+    navigate('/');
+  }
+}, [user]);
   //  useEffect(() => {
   //   if (user?._id) {
   //     connectsocket(user._id);
