@@ -18,7 +18,9 @@ export const createChat = async (req: Request<CreateChatParams>, res: Response) 
     { participants: { $elemMatch: { userId: loggedinUserId } } },
     { participants: { $elemMatch: { userId: otherUserId } } }
   ]
-}).populate("userName");
+}).populate("userId","userName");
+
+console.log("existing chat:",existingChat);
 
     if (existingChat) {
         return res.status(200).json({
@@ -27,12 +29,12 @@ export const createChat = async (req: Request<CreateChatParams>, res: Response) 
             chat: existingChat,
         });
     }
-    console.log("bolo bhai mai yaha a ");
     const newChat:IChat = new Chat({
         isGroupChat: false,
         participants: [{userId:loggedinUserId, status: "accepted" },{userId:otherUserId, status: "pending" }],
     });
     await newChat.save();
+    console.log("nerw chat:",newChat);
     res.status(201).json({
         success: true,
         message: "Chat created successfully",
@@ -46,6 +48,7 @@ export const getUserChats = async (req: Request, res: Response) => {
         isGroupChat: false,
         "participants.userId":loggedinUserId,
     }).populate("participants.userId","userName");
+    console.log("user chat:",chats);
     if(chats.length===0){
         return res.status(200).json({
             success: true,
@@ -53,8 +56,6 @@ export const getUserChats = async (req: Request, res: Response) => {
             chats: [],
         });
     }
-    console.log("chat is :",chats);
-    console.log("participants are :",chats[0].participants);
  return res.status(200).json({
         success: true,
         message: "Chats retrieved successfully",
