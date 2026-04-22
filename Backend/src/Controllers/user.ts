@@ -17,3 +17,19 @@ export async function getuser(req:Request,res:Response){
                 users,
             })
 }
+
+export async function getuserprofile(req:Request,res:Response){
+    const userid=req.user?._id;
+    const user= await User.findById(userid);
+    const formatteduser={
+        _id:user?._id,
+        userName:user?.userName,
+        name:user?.name,
+        email:user?.email,
+    }
+    res.status(200).json({
+        user:formatteduser,
+        message:'profile fetched successfully',
+    })
+
+}

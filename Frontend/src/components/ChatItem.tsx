@@ -5,7 +5,7 @@ import { useAppSelector } from "@/hooks/reduxhooks";
 
 export default function ChatItem({ chat }: any) {
   const user = useAppSelector((state) => state.auth.user);
-
+// if(!user)return <div>Loading...</div>
   const otherUser = chat.participants?.find(
     (p: any) => p.user?._id !== user?._id
   )?.user;

@@ -36,6 +36,7 @@ const navigate=useNavigate();
         body: JSON.stringify({ loginmethod:"email",email, password }),
       });
       const data = await response.json();
+      console.log("data fetched is :",data);
      const { password_, ...safeUser } = data.user;
 
 dispatch(setCredentials(safeUser));

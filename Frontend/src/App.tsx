@@ -6,7 +6,36 @@
   import Home from './Pages/Home'
   import {ChatListLayout} from './layout/ChatListLayout'
   import {ChatLayout} from './layout/ChatLayout'
+  import { useEffect } from 'react'
+  import { setCredentials } from './redux/slice/authslice'
+import { useAppDispatch } from './hooks/reduxhooks'
   function App() {
+    const dispatch=useAppDispatch();
+
+    const fetchuser=async ()=>{
+  try{
+  const res=await fetch(`http://localhost:3000/api/user/me`,{
+    method:"GET",
+    credentials:"include",
+    headers: {
+          'Content-Type': 'application/json',
+        },
+  });
+  const data=await res.json();
+  console.log("user data is :", data);
+  dispatch(setCredentials(data.user));
+}
+catch(err){
+  console.log(err);
+}
+
+}
+
+
+useEffect(()=>{
+  fetchuser();
+},[])
+
   
 
     return (

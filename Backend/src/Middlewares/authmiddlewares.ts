@@ -43,7 +43,7 @@ export const authMiddleware=async (req:Request,res:Response,next:NextFunction):P
 const { userName } = decoded as { userName: string };
 
     const user=await User.findOne({userName});
-    console.log("usr mila auth me :",user);
+   console.log("usr mila auth me :",user);
     if(!user){
         throw new CustomError("Unauthorized: User not found",401);
     }
