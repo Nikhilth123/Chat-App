@@ -45,8 +45,8 @@
             secure:false,
             sameSite:"lax",
             maxAge:24*60*60*1000,
-        });
-        userData.online=true;
+        });  
+        
         await userData.save();
         res.status(200).json({
             success:true,

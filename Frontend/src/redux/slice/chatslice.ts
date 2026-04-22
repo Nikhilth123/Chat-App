@@ -1,21 +1,29 @@
 import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
+interface User{
+  _id:string,
+  name:string,
+  userName:string,
+  profilepic?:string,
+  email:string,
+}
 
 interface Chat {
   _id: string;
-  users: any[];
+  participants:{
+    user:User,
+    status:string,
+  }[],
   lastMessage?: string;
 }
 
 interface ChatState {
-  user: any;
   chats: Chat[];
-  selectedChat: Chat | null;
+  selectedChat: string;
 }
 
 const initialState: ChatState = {
   chats: [],
-  selectedChat: null,
-  user: undefined
+  selectedChat:"",
 };
 
 const chatSlice = createSlice({
@@ -27,10 +35,10 @@ const chatSlice = createSlice({
     },
 
     addChat: (state, action: PayloadAction<Chat>) => {
-      state.chats.unshift(action.payload); // new chat on top
+      state.chats.unshift(action.payload); 
     },
 
-    selectChat: (state, action: PayloadAction<Chat>) => {
+    selectChat: (state, action: PayloadAction<string>) => {
       state.selectedChat = action.payload;
     },
 

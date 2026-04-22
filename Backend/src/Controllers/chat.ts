@@ -2,13 +2,26 @@ import { Request, Response } from "express";
 import {Chat, IChat } from "../Models/chat";
 import mongoose from "mongoose";
 import { CustomError } from "../Middlewares/errormiddlewares";
-interface CreateChatParams {
+interface CreateChatParams extends Response{
   userId: string;
 }
-
-export const createChat = async (req: Request<CreateChatParams>, res: Response) => {
+interface FormattedUser{
+    id:string,
+    name:string,
+    email:string,
+    profilepic?:string
+}
+interface Formattedchats{
+    _id:string,
+    participants:{
+    user:FormattedUser,
+    status:string,
+    }[],
+    lastmessage:string
+}
+export const createChat = async (req: Request, res: Response) => {
     const loggedinUserId= req.user?._id;
-    const otherUserId  =  new mongoose.Types.ObjectId(req.params.userId);
+    const otherUserId  =  new mongoose.Types.ObjectId(req.params.userId as string);
     if (!otherUserId) {
         throw new CustomError(" otherUserId is  required", 400);
     }
@@ -18,7 +31,7 @@ export const createChat = async (req: Request<CreateChatParams>, res: Response) 
     { participants: { $elemMatch: { userId: loggedinUserId } } },
     { participants: { $elemMatch: { userId: otherUserId } } }
   ]
-}).populate("userId","userName");
+});
 
 console.log("existing chat:",existingChat);
 
@@ -61,4 +74,69 @@ export const getUserChats = async (req: Request, res: Response) => {
         message: "Chats retrieved successfully",
         chats: chats,
     });
+}
+
+
+export const getuserallchats=async(req:Request,res:Response)=>{
+        const userid=req.user?._id;
+        if(!userid){
+            return new CustomError("unathorized",401);
+        }
+        const userchats = await Chat.aggregate([
+  {
+    $match: {
+      isGroupChat: false,
+      "participants.userId": userid,
+    }
+  },
+  {
+    $lookup: {
+      from: "users",
+      localField: "participants.userId",
+      foreignField: "_id",
+      as: "userDetails"
+    }
+  },
+  {
+    $addFields: {
+      participants: {
+        $map: {
+          input: "$participants",
+          as: "p",
+          in: {
+            status: "$$p.status",
+            user: {
+              $arrayElemAt: [
+                {
+                  $filter: {
+                    input: "$userDetails",
+                    as: "u",
+                    cond: { $eq: ["$$u._id", "$$p.userId"] }
+                  }
+                },
+                0
+              ]
+            }
+          }
+        }
+      }
+    }
+  },
+  {
+    $project: {
+      "participants.user.password": 0,
+      userDetails: 0
+    }
+  }
+]);
+
+        const formattedchat:Formattedchats[]=userchats.map((chat):Formattedchats=>({
+            _id:chat._id,
+            participants:chat.participants,
+            lastmessage:chat.lastMessage,
+        }))
+        return res.status(201).json({
+            chats:formattedchat,
+            message:"chat fetched successfully",
+        })
 }

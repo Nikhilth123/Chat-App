@@ -24,6 +24,9 @@ export  function ChatList() {
   const [selecteduser,setselecteduser]=useState<any>(null);
   const [loading,setloading]=useState<boolean>(false);
   const dispatch=useAppDispatch();
+  useEffect(() => {
+  console.log("UPDATED chats:", chats);
+}, [chats]);
   const fetchallchats=async()=>{
     try{
     const res=await fetch('http://localhost:3000/api/chats/my-chats',{
@@ -210,12 +213,18 @@ return ()=>clearTimeout(delay)
 
       <ScrollArea className="flex-1">
         <div className="flex flex-col">
-
-          {chats.length!==0?(chats.map(chat => (
+          {!chats?(<div>Loading....</div>)
+          :chats.length===0?(
+          <div>NO chat found</div>
+          ):
+         (chats.map(chat => (
             <ChatItem key={chat._id} chat={chat} />
-          )))
-          :<div>NO chat found</div>
-        }
+          ))) 
+  //       chats.map(chat => (
+  // <div key={chat._id}>{chat._id}</div>
+// ))
+//       
+}
 
         </div>
       </ScrollArea>
