@@ -30,7 +30,7 @@ catch(err){
 }
 
 }
-
+  
 
 useEffect(()=>{
   fetchuser();

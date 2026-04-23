@@ -6,10 +6,10 @@ import { asyncHandler } from "../asyncHandler";
 
 const router = express.Router();
 
-router.post("/send", authMiddleware, asyncHandler(sendMessage));
+router.post("/:chatId/send", authMiddleware, asyncHandler(sendMessage));
 
-router.get("/cha)t/:chatId/messages", authMiddleware, asyncHandler(getAllChatMessages));
-router.put("/message/:messageId", authMiddleware, asyncHandler(UpdateMessage));
+router.get("/:chatId", authMiddleware, asyncHandler(getAllChatMessages));
+router.put("/:messageId", authMiddleware, asyncHandler(UpdateMessage));
 
 router.post("/chat/:chatId/mark-seen", authMiddleware, asyncHandler(markMessagesAsSeen));
 

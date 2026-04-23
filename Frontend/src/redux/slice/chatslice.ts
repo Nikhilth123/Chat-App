@@ -39,6 +39,8 @@ const chatSlice = createSlice({
     },
 
     selectChat: (state, action: PayloadAction<string>) => {
+      console.log("Selecting chat with ID:", action.payload);
+      console.log("Current selected chat before update:", state.selectedChat);
       state.selectedChat = action.payload;
     },
 

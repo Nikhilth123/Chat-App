@@ -5,6 +5,9 @@ interface Message {
   chatId: string;
   sender: any;
   content: string;
+  status: string[];
+  createdAt: string;
+  updatedAt: string;
 }
 
 interface MessageState {

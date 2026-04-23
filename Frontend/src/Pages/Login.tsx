@@ -19,6 +19,7 @@ import { setCredentials } from '@/redux/slice/authslice'
 import { useNavigate } from 'react-router-dom'
 
 export function Login(): JSX.Element {
+  console.log("rendering login page");
 const [email, setEmail] = useState<string>("");
 const [password, setPassword] = useState<string>("");
 const dispatch=useAppDispatch();
@@ -49,11 +50,15 @@ dispatch(setCredentials(safeUser));
 
   }
   useEffect(() => {
-  if (user?._id) {
-    connectsocket(user._id);
-    initSocketListeners();
-    navigate('/');
-  }
+  if (!user?._id) return;
+
+  connectsocket(user._id);
+  initSocketListeners();
+  navigate('/');
+
+  return () => {
+    disconnectsocket();
+  };
 }, [user]);
   //  useEffect(() => {
   //   if (user?._id) {
