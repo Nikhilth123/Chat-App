@@ -15,7 +15,10 @@ export function SocketProvider({ children }: any) {
     connectsocket(user._id);
 
     const socket = getsocket();
-
+if(!socket){
+    console.error("Failed to get socket instance after connection.");
+    return;
+}
     // ✅ wait for connection
     socket.on("connect", () => {
       console.log("Socket connected:", socket.id);

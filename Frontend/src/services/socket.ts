@@ -9,9 +9,10 @@ export const connectsocket=(userid:string):Socket=>{
     })
     return socket;
 }
-export const getsocket=()=>{
+export const getsocket=():Socket|null=>{
     if(!socket){
-        throw new Error("socket not connected");
+        console.log("Socket not initialized. Call connectsocket(userId) first.");
+        return null;
     }
     return socket;
 }

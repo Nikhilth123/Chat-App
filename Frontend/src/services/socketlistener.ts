@@ -9,7 +9,10 @@ import { getsocket } from "./socket";
 
 export const initSocketListeners = () => {
   const socket = getsocket();
-
+if(!socket){
+    console.log("Socket not initialized. Call connectsocket(userId) first.");
+    return;
+}
   // ===== MESSAGE =====
   socket.off("receive_message");
   socket.on("receive_message", (msg) => {

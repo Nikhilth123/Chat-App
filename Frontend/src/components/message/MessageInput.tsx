@@ -11,8 +11,13 @@ export function MessageInput() {
   const { id } = useParams();
 
   const socket = getsocket();
+ 
   const typingTimeout = useRef<any>(null);
 
+   if(!socket){
+    console.error("socket not initialized. Call connectsocket(userId) first.");
+    return null; // or some fallback UI
+  }
   // ===== HANDLE TYPING =====
   const handleChange = (e: any) => {
     const value = e.target.value;

@@ -25,7 +25,7 @@ export function MessagesContainer() {
 
   // ===== TYPING USERS =====
   const typingUsers = useAppSelector((state) =>
-    selectedChatId ? state.realtime.typingUsers[selectedChatId] : []
+    selectedChatId ? state.realtime.typingUsers[selectedChatId] :undefined
   );
 
   // remove yourself
@@ -80,6 +80,10 @@ export function MessagesContainer() {
   // ===== SOCKET JOIN / LEAVE =====
   useEffect(() => {
     const socket = getsocket();
+    if(!socket){
+        console.log("Socket not initialized. Call connectsocket(userId) first.");
+        return;
+    }
     if (!selectedChatId) return;
 
     socket.emit("join_chat", selectedChatId);
