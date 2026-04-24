@@ -22,7 +22,17 @@ const dispatch=useDispatch();
     const data = await res.json();
     console.log("Message sent:", data);
     setMessage("");
-    dispatch(addMessage(data.data));
+   dispatch(addMessage({
+  chatId: data.data.chatId,
+  message: {
+    _id: data.data._id,
+    chatId: data.data.chatId,
+    text: data.data.content,       // mapping
+    senderId: data.data.sender,    // mapping
+    createdAt: data.data.createdAt,
+    updatedAt: data.data.updatedAt
+  }
+}))
    }catch(err){
     console.error("Error sending message:", err);
    }
