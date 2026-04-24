@@ -9,6 +9,7 @@ import { socketstart } from './socket/socketHandler';
 import chat from './Routes/chat'
 import cookieParser from "cookie-parser";
 import user from './Routes/user'
+import message from './Routes/message';
 const app:Application = express();
 app.use(express.json());
 app.use(cookieParser());
@@ -28,7 +29,7 @@ app.use(urlencoded({extended:true}));
 app.use('/api/auth',Auth);
 app.use('/api/chats',chat);
 app.use('/api/user',user);
-
+app.use('/api/messages',message);
 
 app.use(errorHandler);
 const server=http.createServer(app);

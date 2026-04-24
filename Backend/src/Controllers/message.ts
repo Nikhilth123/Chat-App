@@ -4,17 +4,23 @@ import { CustomError } from "../Middlewares/errormiddlewares";
 
 export const sendMessage = async (req: Request, res: Response) => {
     const loggedInUser = req.user?._id;
-    const { chatId, content } = req.body;
+    const {chatId} = req.params
+    const { content } = req.body;
     if (!chatId || !content) {
         throw new CustomError("chatId and content are required", 400);
     }
+    console.log("Sending message to chatId:", chatId, "with content:", content);
     const newMessage: IMessage = new Message({
         chatId,
         sender: loggedInUser,
         content,
-        seenBy: [],
+        status: [],
     });
+    console.log("Created new message object:", newMessage);
+    
     await newMessage.save();
+   
+   
     res.status(201).json({
         success: true,
         message: "Message sent successfully",
