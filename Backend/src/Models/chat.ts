@@ -5,9 +5,10 @@ export interface IChartParticipants{
     userId: Types.ObjectId;
     status: 'accepted' | 'pending' | 'blocked';
 }
-export interface IMessageStatus{
-  userId:Types.ObjectId;
-  status:'sent'|'delivered'|'seen';
+export interface IMessageStatus {
+  userId: Types.ObjectId;
+  delivered: boolean;
+  seen: boolean;
 }
 
 export interface IChat extends Document {
@@ -85,20 +86,23 @@ const messageSchema = new Schema<IMessage>(
       required: true,
       trim: true,
     },
-    status:[
-     {
-      userId:{
-        type:Types.ObjectId,
-        ref:"User",
-        required:true,
-      },
-      status:{
-        type:String,
-        enum:["sent","delivered","seen"],
-        default:"sent",
-      },
-     }
-    ],
+   status: [
+  {
+    userId: {
+      type: Types.ObjectId,
+      ref: "User",
+      required: true,
+    },
+    delivered: {
+      type: Boolean,
+      default: false,
+    },
+    seen: {
+      type: Boolean,
+      default: false,
+    },
+  },
+],
   },
   { timestamps: true }
 );
