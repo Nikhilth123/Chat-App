@@ -1,6 +1,6 @@
 import { useEffect, useRef } from "react";
 import { useAppSelector } from "@/hooks/reduxhooks";
-import { connectsocket, disconnectsocket } from "@/services/socket";
+import { connectsocket, disconnectsocket, getsocket } from "@/services/socket";
 import { initSocketListeners } from "@/services/socketlistener";
 
 export function SocketProvider({ children }: any) {
@@ -13,6 +13,16 @@ export function SocketProvider({ children }: any) {
     hasConnected.current = true;
 
     connectsocket(user._id);
+
+    const socket = getsocket();
+
+    // ✅ wait for connection
+    socket.on("connect", () => {
+      console.log("Socket connected:", socket.id);
+
+      socket.emit("join", user._id);   // ✅ NOW SAFE
+    });
+
     initSocketListeners();
 
     return () => {
