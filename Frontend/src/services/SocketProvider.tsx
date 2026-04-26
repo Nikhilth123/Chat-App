@@ -7,43 +7,39 @@ export function SocketProvider({ children }: any) {
   const user = useAppSelector((state) => state.auth.user);
   const hasConnected = useRef(false);
 
-  useEffect(() => {
-  const handleClose = () => {
-    disconnectsocket();
-  };
-
-  window.addEventListener("beforeunload", handleClose);
-
-  return () => {
-    window.removeEventListener("beforeunload", handleClose);
-  };
-}, []);
-
+  // ===== CONNECT =====
   useEffect(() => {
     if (!user?._id || hasConnected.current) return;
 
     hasConnected.current = true;
 
-    connectsocket(user._id);
+    const socket = connectsocket(user._id);
 
-    const socket = getsocket();
-if(!socket){
-    console.error("Failed to get socket instance after connection.");
-    return;
-}
-    // ✅ wait for connection
     socket.once("connect", () => {
       console.log("Socket connected:", socket.id);
 
-      socket.emit("join", user._id);   // ✅ NOW SAFE
+      socket.emit("join", user._id);
+      initSocketListeners(); // ✅ important
     });
-
-    initSocketListeners();
 
     return () => {
       disconnectsocket();
       hasConnected.current = false;
     };
+  }, [user?._id]);
+
+  // ===== HEARTBEAT =====
+  useEffect(() => {
+    if (!user?._id) return;
+
+    const interval = setInterval(() => {
+      const socket = getsocket();
+      if (!socket) return;
+
+      socket.emit("heartbeat");
+    }, 10000);
+
+    return () => clearInterval(interval);
   }, [user?._id]);
 
   return children;

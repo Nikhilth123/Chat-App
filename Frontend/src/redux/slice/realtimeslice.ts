@@ -14,38 +14,30 @@ const realtimeSlice = createSlice({
   name: "realtime",
   initialState,
   reducers: {
+    // ✅ REPLACE FULL LIST (IMPORTANT CHANGE)
     setTyping: (
       state,
-      action: PayloadAction<{ chatId: string; userId: string }>
+      action: PayloadAction<{ chatId: string; users: string[] }>
     ) => {
-      const { chatId, userId } = action.payload;
+      const { chatId, users } = action.payload;
 
-      if (!state.typingUsers[chatId]) {
-        state.typingUsers[chatId] = [];
-      }
-
-      if (!state.typingUsers[chatId].includes(userId)) {
-        state.typingUsers[chatId].push(userId);
-      }
+      state.typingUsers[chatId] = users;
     },
 
-    removeTyping: (
-      state,
-      action: PayloadAction<{ chatId: string; userId: string }>
-    ) => {
-      const { chatId, userId } = action.payload;
-
-      state.typingUsers[chatId] =
-        state.typingUsers[chatId]?.filter((id) => id !== userId) || [];
+    // ✅ (optional) clear when leaving chat
+    clearTyping: (state, action: PayloadAction<{ chatId: string }>) => {
+      const { chatId } = action.payload;
+      delete state.typingUsers[chatId];
     },
 
+    // ✅ unchanged
     setOnlineUsers: (state, action: PayloadAction<string[]>) => {
       state.onlineUsers = action.payload;
     },
   },
 });
 
-export const { setTyping, removeTyping, setOnlineUsers } =
+export const { setTyping, clearTyping, setOnlineUsers } =
   realtimeSlice.actions;
 
 export default realtimeSlice.reducer;
