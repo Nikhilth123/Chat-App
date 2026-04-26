@@ -8,6 +8,18 @@ export function SocketProvider({ children }: any) {
   const hasConnected = useRef(false);
 
   useEffect(() => {
+  const handleClose = () => {
+    disconnectsocket();
+  };
+
+  window.addEventListener("beforeunload", handleClose);
+
+  return () => {
+    window.removeEventListener("beforeunload", handleClose);
+  };
+}, []);
+
+  useEffect(() => {
     if (!user?._id || hasConnected.current) return;
 
     hasConnected.current = true;
@@ -20,7 +32,7 @@ if(!socket){
     return;
 }
     // ✅ wait for connection
-    socket.on("connect", () => {
+    socket.once("connect", () => {
       console.log("Socket connected:", socket.id);
 
       socket.emit("join", user._id);   // ✅ NOW SAFE

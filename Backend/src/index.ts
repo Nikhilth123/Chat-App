@@ -39,6 +39,8 @@ const io=new Server(server,{
     origin:"http://localhost:5173",
     credentials:true
   },
+  pingInterval:10000,
+  pingTimeout:5000,
 });
 setIO(io);
 socketstart(io);
