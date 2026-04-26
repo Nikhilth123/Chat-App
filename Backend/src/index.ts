@@ -10,6 +10,7 @@ import chat from './Routes/chat'
 import cookieParser from "cookie-parser";
 import user from './Routes/user'
 import message from './Routes/message';
+import { setIO } from './socket/socketInstance';
 const app:Application = express();
 app.use(express.json());
 app.use(cookieParser());
@@ -38,8 +39,12 @@ const io=new Server(server,{
     origin:"http://localhost:5173",
     credentials:true
   },
+  pingInterval:10000,
+  pingTimeout:5000,
 });
+setIO(io);
 socketstart(io);
+
 server.listen(3000, () => {
   console.log('Server is running on port 3000');
 });

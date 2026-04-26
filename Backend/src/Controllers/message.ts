@@ -1,7 +1,7 @@
 import { Message,IMessage} from "../Models/chat";
 import { Request, Response } from "express";
 import { CustomError } from "../Middlewares/errormiddlewares";
-
+import { getIO } from "../socket/socketInstance";
 export const sendMessage = async (req: Request, res: Response) => {
     const loggedInUser = req.user?._id;
     const {chatId} = req.params
@@ -20,7 +20,16 @@ export const sendMessage = async (req: Request, res: Response) => {
     
     await newMessage.save();
    
-   
+   const io = getIO();
+io.to(chatId).emit("receive_message", {
+  _id: newMessage._id,
+  chatId: newMessage.chatId,
+  sender: newMessage.sender,
+  content: newMessage.content,
+  createdAt: newMessage.createdAt,
+  updatedAt: newMessage.updatedAt,
+  status: newMessage.status,
+});
     res.status(201).json({
         success: true,
         message: "Message sent successfully",

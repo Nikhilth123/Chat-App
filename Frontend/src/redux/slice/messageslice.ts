@@ -7,6 +7,7 @@ interface Message {
   createdAt: string
   senderId: string
   updatedAt: string
+  status?: "sent" | "delivered" | "read"
 }
 
 interface ChatMessages {

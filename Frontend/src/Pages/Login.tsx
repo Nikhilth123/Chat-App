@@ -41,6 +41,7 @@ const navigate=useNavigate();
      const { password_, ...safeUser } = data.user;
 
 dispatch(setCredentials(safeUser));
+navigate('/');
      
       console.log(data);
     } catch (error) {
@@ -49,17 +50,17 @@ dispatch(setCredentials(safeUser));
 
 
   }
-  useEffect(() => {
-  if (!user?._id) return;
+//   useEffect(() => {
+//   if (!user?._id) return;
 
-  connectsocket(user._id);
-  initSocketListeners();
-  navigate('/');
+//   connectsocket(user._id);
+//   initSocketListeners();
+//   navigate('/');
 
-  return () => {
-    disconnectsocket();
-  };
-}, [user]);
+//   return () => {
+//     disconnectsocket();
+//   };
+// }, [user]);
   //  useEffect(() => {
   //   if (user?._id) {
   //     connectsocket(user._id);
