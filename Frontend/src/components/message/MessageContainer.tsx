@@ -100,6 +100,16 @@ export function MessagesContainer() {
     bottomRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages, filteredTypingUsers.length]);
 
+  useEffect(() => {
+  if (!selectedChatId) return;
+
+  const socket = getsocket();
+  if (!socket) return;
+
+  socket.emit("messages_seen", { selectedChatId });
+
+}, [selectedChatId]);
+
   return (
     <div className="flex-1 overflow-y-auto p-4 space-y-3">
       

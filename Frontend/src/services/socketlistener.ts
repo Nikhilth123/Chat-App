@@ -1,5 +1,5 @@
 import store from "@/redux/store";
-import { addMessage } from "@/redux/slice/messageslice";
+import { addMessage, updateMessageStatus } from "@/redux/slice/messageslice";
 import {
   setTyping,
   setOnlineUsers,
@@ -29,8 +29,16 @@ export const initSocketListeners = () => {
         message,
       })
     );
+
+     socket.emit("message_delivered", {
+    messageId: msg._id,
+    chatId: msg.chatId,
+  });
   });
 
+  socket.on("message_status_update", ({ messageId, userId, type }) => {
+  store.dispatch(updateMessageStatus({ messageId, userId, type }))
+})
   // ===== TYPING (TTL BASED) =====
   socket.off("typing_users");
   socket.on("typing_users", ({ chatId, users }) => {

@@ -7,7 +7,11 @@ interface Message {
   createdAt: string
   senderId: string
   updatedAt: string
-  status?: "sent" | "delivered" | "read"
+  status:{
+  userId:string;
+  delivered: boolean;
+  seen: boolean;
+}[]
 }
 
 interface ChatMessages {
@@ -109,6 +113,40 @@ const messageSlice = createSlice({
       }
     },
 
+    //update message status 
+
+    updateMessageStatus: (
+  state,
+  action: PayloadAction<{
+    messageId: string
+    userId: string
+    type: "delivered" | "seen"
+  }>
+) => {
+  const { messageId, userId, type } = action.payload
+
+  // find message across chats
+  for (const chatId in state.byChatId) {
+    const chat = state.byChatId[chatId]
+    const msg = chat.entities[messageId]
+
+    if (msg) {
+      const userStatus = msg.status.find(s => s.userId === userId)
+
+      if (userStatus) {
+        if (type === "delivered") {
+          userStatus.delivered = true
+        }
+
+        if (type === "seen") {
+          userStatus.seen = true
+          userStatus.delivered = true // seen implies delivered
+        }
+      }
+    }
+  }
+},
+
     // ✅ Clear messages (optional - logout etc.)
     clearMessages: (state) => {
       state.byChatId = {}
@@ -120,7 +158,8 @@ export const {
   setMessages,
   addMessage,
   addOlderMessages,
-  clearMessages
+  clearMessages,
+  updateMessageStatus
 } = messageSlice.actions
 
 export default messageSlice.reducer
