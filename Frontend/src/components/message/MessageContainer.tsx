@@ -14,7 +14,7 @@ export function MessagesContainer() {
 
   const user = useAppSelector((state) => state.auth.user);
 
-  // ===== GET MESSAGES FROM REDUX =====
+  // ===== GET MESSAGES =====
   const chatMessages = useAppSelector((state) =>
     selectedChatId ? state.message.byChatId[selectedChatId] : null
   );
@@ -25,10 +25,9 @@ export function MessagesContainer() {
 
   // ===== TYPING USERS =====
   const typingUsers = useAppSelector((state) =>
-    selectedChatId ? state.realtime.typingUsers[selectedChatId] :undefined
+    selectedChatId ? state.realtime.typingUsers[selectedChatId] : undefined
   );
 
-  // remove yourself
   const filteredTypingUsers = (typingUsers || []).filter(
     (uid) => uid !== user?._id
   );
@@ -41,9 +40,6 @@ export function MessagesContainer() {
         {
           method: "GET",
           credentials: "include",
-          headers: {
-            "Content-Type": "application/json",
-          },
         }
       );
 
@@ -56,7 +52,7 @@ export function MessagesContainer() {
         senderId: msg.sender,
         createdAt: msg.createdAt,
         updatedAt: msg.updatedAt,
-        status: msg.status || "sent",
+        status: msg.status || [], // ✅ IMPORTANT
       }));
 
       dispatch(
@@ -70,7 +66,6 @@ export function MessagesContainer() {
     }
   };
 
-  // ===== FETCH ON CHAT CHANGE =====
   useEffect(() => {
     if (selectedChatId) {
       fetchMessages();
@@ -80,11 +75,7 @@ export function MessagesContainer() {
   // ===== SOCKET JOIN / LEAVE =====
   useEffect(() => {
     const socket = getsocket();
-    if(!socket){
-        console.log("Socket not initialized. Call connectsocket(userId) first.");
-        return;
-    }
-    if (!selectedChatId) return;
+    if (!socket || !selectedChatId) return;
 
     socket.emit("join_chat", selectedChatId);
 
@@ -100,15 +91,43 @@ export function MessagesContainer() {
     bottomRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages, filteredTypingUsers.length]);
 
+  // ===== SEEN LOGIC (DEBOUNCED) =====
+  const lastSeenRef = useRef(0);
+
+  const emitSeen = () => {
+    const socket = getsocket();
+    if (!socket || !selectedChatId) return;
+
+    const now = Date.now();
+    if (now - lastSeenRef.current > 800) {
+      socket.emit("messages_seen", { chatId: selectedChatId });
+      lastSeenRef.current = now;
+    }
+  };
+
+  // ✅ Seen when chat opens
   useEffect(() => {
-  if (!selectedChatId) return;
+    if (!selectedChatId) return;
+    emitSeen();
+  }, [selectedChatId]);
 
-  const socket = getsocket();
-  if (!socket) return;
+  // ✅ Seen when new message arrives in open chat
+  useEffect(() => {
+    const socket = getsocket();
+    if (!socket) return;
 
-  socket.emit("messages_seen", { selectedChatId });
+    const handleReceive = (msg: any) => {
+      if (msg.chatId === selectedChatId) {
+        emitSeen();
+      }
+    };
 
-}, [selectedChatId]);
+    socket.on("receive_message", handleReceive);
+
+    return () => {
+      socket.off("receive_message", handleReceive);
+    };
+  }, [selectedChatId]);
 
   return (
     <div className="flex-1 overflow-y-auto p-4 space-y-3">

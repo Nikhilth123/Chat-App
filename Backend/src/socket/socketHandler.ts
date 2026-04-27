@@ -60,7 +60,7 @@ export const socketstart = (io: Server) => {
     // ===== JOIN USER =====
     socket.on("join", async (userId: string) => {
       if (!userId) return;
-
+console.log("JOIN SENT:", userId);
       socket.data.userId = userId;
       socket.data.socketKey = `user:${userId}:socket:${socket.id}`;
 
@@ -135,6 +135,7 @@ export const socketstart = (io: Server) => {
           userId,
           type: "delivered",
         });
+        console.log(`Message ${messageId} marked as delivered by user ${userId}`);
       } catch (err) {
         console.error("Error in message_delivered:", err);
       }
@@ -182,6 +183,7 @@ export const socketstart = (io: Server) => {
             userId,
             type: "seen",
           });
+          console.log(`Message ${msg._id} marked as seen by user ${userId}`);
         }
 
       } catch (err) {

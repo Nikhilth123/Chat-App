@@ -20,7 +20,7 @@ export const initSocketListeners = () => {
       senderId: msg.sender,
       createdAt: msg.createdAt,
       updatedAt: msg.updatedAt,
-      status: msg.status || "sent",
+      status: msg.status ||[],
     };
 
     store.dispatch(
@@ -32,7 +32,6 @@ export const initSocketListeners = () => {
 
      socket.emit("message_delivered", {
     messageId: msg._id,
-    chatId: msg.chatId,
   });
   });
 

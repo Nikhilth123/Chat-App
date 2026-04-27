@@ -12,19 +12,17 @@ export function MessageBubble({ message, isGrouped }: any) {
     minute: "2-digit",
   });
 
- 
-
-  const renderStatus = () => {
+ console.log("STATUS:", message.status);
+const renderStatus = () => {
   if (!isMe) return null;
 
-  if (!message.status || message.status.length === 0) return "✓";
+  const s = message.status?.[0];
 
-  const allDelivered = message.status.delivered;
-  const allSeen = message.status.seen;
 
-  if (!allDelivered) return "✓";
-  if (allDelivered && !allSeen) return "✓✓";
-  if (allSeen) return "✓✓";
+  if (!s) return "✓"; // sent
+  if (!s.delivered) return "✓";
+  if (s.delivered && !s.seen) return "✓✓";
+  if (s.seen) return "✓✓";
 
   return "";
 };
@@ -54,11 +52,11 @@ export function MessageBubble({ message, isGrouped }: any) {
 
         <div className="flex justify-end items-center gap-1 text-[10px] mt-1 opacity-70">
           <span>{time}</span>
-          <span
-            className={message.status === "seen" ? "text-blue-400" : ""}
-          >
-            {renderStatus()}
-          </span>
+         <span
+  className={message.status?.[0]?.seen ? "text-blue-600 font-bold" : ""}
+>
+  {renderStatus()}
+</span>
         </div>
       </div>
     </motion.div>
