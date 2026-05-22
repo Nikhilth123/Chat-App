@@ -1,5 +1,7 @@
 import { useAppSelector } from "@/hooks/reduxhooks";
+
 import { motion } from "framer-motion";
+
 
 export function MessageBubble({ message, isGrouped }: any) {
   const user = useAppSelector((state) => state.auth.user);
@@ -10,21 +12,20 @@ export function MessageBubble({ message, isGrouped }: any) {
     minute: "2-digit",
   });
 
-  const renderStatus = () => {
-    if (!isMe) return null;
+ console.log("STATUS:", message.status);
+const renderStatus = () => {
+  if (!isMe) return null;
 
-    switch (message.status) {
-      case "sent":
-        return "✓";
-      case "delivered":
-        return "✓✓";
-      case "seen":
-        return "✓✓";
-      default:
-        return "";
-    }
-  };
+  const s = message.status?.[0];
 
+
+  if (!s) return "✓"; // sent
+  if (!s.delivered) return "✓";
+  if (s.delivered && !s.seen) return "✓✓";
+  if (s.seen) return "✓✓";
+
+  return "";
+};
   return (
     <motion.div
       initial={{ opacity: 0, y: 10 }}
@@ -51,11 +52,11 @@ export function MessageBubble({ message, isGrouped }: any) {
 
         <div className="flex justify-end items-center gap-1 text-[10px] mt-1 opacity-70">
           <span>{time}</span>
-          <span
-            className={message.status === "seen" ? "text-blue-400" : ""}
-          >
-            {renderStatus()}
-          </span>
+         <span
+  className={message.status?.[0]?.seen ? "text-blue-600 font-bold" : ""}
+>
+  {renderStatus()}
+</span>
         </div>
       </div>
     </motion.div>

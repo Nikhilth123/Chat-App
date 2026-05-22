@@ -14,13 +14,20 @@ export function SocketProvider({ children }: any) {
     hasConnected.current = true;
 
     const socket = connectsocket(user._id);
+initSocketListeners();
+  const handleConnect = () => {
+  console.log("Socket connected:", socket.id);
 
-    socket.once("connect", () => {
-      console.log("Socket connected:", socket.id);
+  socket.emit("join", user._id);
+  
+};
 
-      socket.emit("join", user._id);
-      initSocketListeners(); // ✅ important
-    });
+if (socket.connected) {
+  // ✅ already connected → run immediately
+  handleConnect();
+} else {
+  socket.once("connect", handleConnect);
+}
 
     return () => {
       disconnectsocket();

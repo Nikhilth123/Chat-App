@@ -2,6 +2,7 @@ import { Message,IMessage} from "../Models/chat";
 import { Request, Response } from "express";
 import { CustomError } from "../Middlewares/errormiddlewares";
 import { getIO } from "../socket/socketInstance";
+import {Chat} from "../Models/chat";
 export const sendMessage = async (req: Request, res: Response) => {
     const loggedInUser = req.user?._id;
     const {chatId} = req.params
@@ -10,11 +11,26 @@ export const sendMessage = async (req: Request, res: Response) => {
         throw new CustomError("chatId and content are required", 400);
     }
     console.log("Sending message to chatId:", chatId, "with content:", content);
+    const chat = await Chat.findById(chatId);
+    if (!chat) {
+        throw new CustomError("Chat not found", 404);
+    }
+    if(!loggedInUser){
+        throw new CustomError("Unauthorized", 401);
+    }
+
+ const status = chat.participants
+  .filter(p => p.userId.toString() !== loggedInUser.toString())
+  .map(p => ({
+    userId: p.userId,
+    delivered: false,
+    seen: false
+  }));
     const newMessage: IMessage = new Message({
         chatId,
         sender: loggedInUser,
         content,
-        status: [],
+        status:status
     });
     console.log("Created new message object:", newMessage);
     

@@ -17,6 +17,8 @@ export function ChatHeader({ chatId }: { chatId?: string }) {
   ? onlineUsers.includes(otherUser._id)
   : false;
 
+  console.log("otherUserId:", otherUser?._id);
+console.log("onlineUsers:", onlineUsers);
   return (
     <div className="flex items-center justify-between p-4 border-b">
       
