@@ -13,15 +13,13 @@ const MainLayout: React.FC = () => {
   return (
     <div className="flex h-screen w-full">
 
-      {/* Desktop MenuBar */}
+     
       <div className="hidden md:block">
         <MenuBar />
       </div>
 
-      {/* Main Content */}
       <div className="flex flex-col flex-1">
 
-        {/* Mobile Header */}
         <div className="md:hidden flex items-center gap-3 p-3 border-b">
 
           <Sheet>
