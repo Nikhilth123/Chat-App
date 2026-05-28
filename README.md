@@ -177,9 +177,7 @@ JWT_SECRET=
 ---
 
 
-```md
-![Home Page](./screenshots/home.png)
-```
+
 
 ---
 
