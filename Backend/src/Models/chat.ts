@@ -63,6 +63,7 @@ export interface IMessage extends Document {
   chatId: Types.ObjectId;
   sender: Types.ObjectId;
   content: string;
+  filecontent?: string[];
   status:IMessageStatus[];
   createdAt: Date;
   updatedAt: Date;
@@ -83,8 +84,11 @@ const messageSchema = new Schema<IMessage>(
     },
     content: {
       type: String,
-      required: true,
       trim: true,
+    },
+    filecontent: {
+      type:String,
+      trim:true,
     },
    status: [
   {

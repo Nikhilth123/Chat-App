@@ -3,11 +3,15 @@ import { Request, Response } from "express";
 import { CustomError } from "../Middlewares/errormiddlewares";
 import { getIO } from "../socket/socketInstance";
 import {Chat} from "../Models/chat";
+import cloudinary from '../Config/cloudinary'
+import fs from 'fs'
+
 export const sendMessage = async (req: Request, res: Response) => {
     const loggedInUser = req.user?._id;
     const {chatId} = req.params
     const { content } = req.body;
-    if (!chatId || !content) {
+    const filecontent = req.file?.path;
+    if (!chatId || (!content && !filecontent)) {
         throw new CustomError("chatId and content are required", 400);
     }
     console.log("Sending message to chatId:", chatId, "with content:", content);
@@ -26,10 +30,27 @@ export const sendMessage = async (req: Request, res: Response) => {
     delivered: false,
     seen: false
   }));
+
+  let fileUrl =[];
+  if(req.file){
+    const filepath=req?.file.path;
+ 
+    const result=await cloudinary.uploader.upload(filepath,{
+        folder:'profile-pics',
+        width:300,
+        height:300,
+        crop:"limit"
+    });
+  
+   fs.unlinkSync(filepath);
+   fileUrl.push(result.secure_url);
+   console.log("File uploaded to Cloudinary:", result.secure_url);
+}
     const newMessage: IMessage = new Message({
         chatId,
         sender: loggedInUser,
         content,
+        filecontent: fileUrl,
         status:status
     });
     console.log("Created new message object:", newMessage);
@@ -42,6 +63,7 @@ io.to(chatId).emit("receive_message", {
   chatId: newMessage.chatId,
   sender: newMessage.sender,
   content: newMessage.content,
+  filecontents:newMessage.filecontent,
   createdAt: newMessage.createdAt,
   updatedAt: newMessage.updatedAt,
   status: newMessage.status,

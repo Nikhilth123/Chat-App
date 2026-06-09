@@ -9,6 +9,7 @@
   import { useEffect } from 'react'
   import { setCredentials } from './redux/slice/authslice'
 import { useAppDispatch } from './hooks/reduxhooks'
+import Createpost from './Pages/Createpost'
   function App() {
     const dispatch=useAppDispatch();
 
@@ -44,6 +45,7 @@ useEffect(()=>{
       <Routes>
         <Route element={<MainLayout></MainLayout>}>
         <Route path='/' element={<Home></Home>}></Route>
+        <Route path='/create-post' element={<Createpost></Createpost>}/>
         <Route path='/chat' element={<ChatListLayout></ChatListLayout>}>
         <Route path=':id' element={<ChatLayout></ChatLayout>}/>
         </Route>

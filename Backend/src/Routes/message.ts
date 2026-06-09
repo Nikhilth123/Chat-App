@@ -3,10 +3,10 @@ import { getAllChatMessages,sendMessage
     ,UpdateMessage,deleteMessage,markMessagesAsSeen} from "../Controllers/message";
 import { authMiddleware } from "../Middlewares/authmiddlewares";
 import { asyncHandler } from "../asyncHandler";
-
+import { upload } from '../Config/multer';
 const router = express.Router();
 
-router.post("/:chatId/send", authMiddleware, asyncHandler(sendMessage));
+router.post("/:chatId/send", authMiddleware, upload.single('file'), asyncHandler(sendMessage));
 
 router.get("/:chatId", authMiddleware, asyncHandler(getAllChatMessages));
 router.put("/:messageId", authMiddleware, asyncHandler(UpdateMessage));
