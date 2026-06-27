@@ -4,6 +4,12 @@ interface Message {
   _id: string
   chatId: string
   text: string
+  attachements:{
+    url:string,
+    type:string,
+    size:number,
+    originalName:string
+  }[]
   createdAt: string
   senderId: string
   updatedAt: string

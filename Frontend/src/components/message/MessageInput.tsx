@@ -4,12 +4,12 @@ import { useParams } from "react-router-dom";
 import { addMessage } from "@/redux/slice/messageslice";
 import { useDispatch } from "react-redux";
 import { getsocket } from "@/services/socket";
-
+import { Paperclip } from "lucide-react";
 export function MessageInput() {
   const dispatch = useDispatch();
   const [message, setMessage] = useState("");
   const { id } = useParams();
-
+const [files, setFiles] = useState<File[]>([]);
   const socket = getsocket();
  
   const typingTimeout = useRef<any>(null);
@@ -40,7 +40,16 @@ export function MessageInput() {
 
   // ===== SEND MESSAGE =====
   const sendMessage = async () => {
-    if (!message.trim()) return; // prevent empty
+      console.log("SEND MESSAGE CALLED");
+    if (!message.trim()&&files.length==0) return; // prevent empty
+
+    const formData = new FormData();
+
+formData.append("content", message);
+
+files.forEach((file) => {
+  formData.append("attachments", file);
+});
 
     try {
       const res = await fetch(
@@ -48,10 +57,7 @@ export function MessageInput() {
         {
           method: "POST",
           credentials: "include",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ content: message }),
+          body: formData,
         }
       );
 
@@ -69,15 +75,16 @@ export function MessageInput() {
             _id: msg._id,
             chatId: msg.chatId,
             text: msg.content,
+            attachements:msg.attachements,
             senderId: msg.sender,
             createdAt: msg.createdAt,
             updatedAt: msg.updatedAt,
-            status: "sent",
+            status: msg.status,
           },
         })
       );
-
-      setMessage("");
+setMessage("");
+setFiles([]);
     } catch (err) {
       console.error("Error sending message:", err);
     }
@@ -93,6 +100,21 @@ export function MessageInput() {
 
   return (
     <div className="flex items-center gap-2 p-4 border-t">
+      <label>
+  <Paperclip />
+  <input
+    type="file"
+    multiple
+    className="hidden"
+    onChange={(e) => {
+    if (!e.target.files) return;
+
+    setFiles(Array.from(e.target.files));
+  }}
+  />
+</label>
+
+
       <input
         value={message}
         onChange={handleChange}

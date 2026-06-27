@@ -44,17 +44,18 @@ export function MessagesContainer() {
       );
 
       const data = await res.json();
-
+      
       const transformedMessages = data.data.map((msg: any) => ({
         _id: msg._id,
         chatId: msg.chatId,
         text: msg.content,
+        attachements:msg.attachments,
         senderId: msg.sender,
         createdAt: msg.createdAt,
         updatedAt: msg.updatedAt,
         status: msg.status || [], // ✅ IMPORTANT
       }));
-
+    console.log('messages is:',transformedMessages)
       dispatch(
         setMessages({
           chatId: selectedChatId!,
