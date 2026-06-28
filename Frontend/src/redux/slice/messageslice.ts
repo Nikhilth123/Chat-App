@@ -5,10 +5,15 @@ interface Message {
   chatId: string
   text: string
   attachements:{
-    url:string,
-    type:string,
-    size:number,
-    originalName:string
+         _id: string,
+    originalName: string,
+    mimeType: string,
+    size: number,
+    type: string,
+
+    previewUrl:string,
+
+    downloadUrl:string,
   }[]
   createdAt: string
   senderId: string

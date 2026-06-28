@@ -49,7 +49,7 @@ export function MessagesContainer() {
         _id: msg._id,
         chatId: msg.chatId,
         text: msg.content,
-        attachements:msg.attachments,
+        attachements:msg.attachements,
         senderId: msg.sender,
         createdAt: msg.createdAt,
         updatedAt: msg.updatedAt,
