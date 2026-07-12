@@ -17,6 +17,7 @@ interface Message {
   }[]
   createdAt: string
   senderId: string
+  systemmessage?:boolean
   updatedAt: string
   status:{
   userId:string;

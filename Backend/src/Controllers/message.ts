@@ -3,18 +3,30 @@ import { Request, Response } from "express";
 import { CustomError } from "../Middlewares/errormiddlewares";
 import { getIO } from "../socket/socketInstance";
 import {Chat} from "../Models/chat";
-import cloudinary from '../Config/cloudinary'
+import b2 from "../Config/b2";
+import {
+  PutObjectCommand,
+} from "@aws-sdk/client-s3";
 import fs from 'fs'
-
+import crypto from "crypto";
+import { formatAttachements } from "../Utils/formatattachements";
 export const sendMessage = async (req: Request, res: Response) => {
+    
     const loggedInUser = req.user?._id;
-    const {chatId} = req.params
+    const {chatId} = req.params;
     const { content } = req.body;
-    const filecontent = req.file?.path;
-    if (!chatId || (!content && !filecontent)) {
+    const files=req.files as Express.Multer.File[] ||[];
+    console.log({
+  endpoint: process.env.B2_ENDPOINT,
+  bucket: process.env.B2_BUCKET_NAME,
+  keyId: process.env.B2_KEY_ID,
+  appKey: !!process.env.B2_APPLICATION_KEY,
+});
+    if (!chatId || (!content && files.length==0)) {
         throw new CustomError("chatId and content are required", 400);
     }
-    console.log("Sending message to chatId:", chatId, "with content:", content);
+    
+
     const chat = await Chat.findById(chatId);
     if (!chat) {
         throw new CustomError("Chat not found", 404);
@@ -31,26 +43,49 @@ export const sendMessage = async (req: Request, res: Response) => {
     seen: false
   }));
 
-  let fileUrl =[];
-  if(req.file){
-    const filepath=req?.file.path;
- 
-    const result=await cloudinary.uploader.upload(filepath,{
-        folder:'profile-pics',
-        width:300,
-        height:300,
-        crop:"limit"
+let attachements = [];
+
+for (const file of files) {
+
+    let type = "file";
+
+    if (file.mimetype.startsWith("image/"))
+        type = "image";
+
+    else if (file.mimetype.startsWith("video/"))
+        type = "video";
+
+    else if (file.mimetype.startsWith("audio/"))
+        type = "audio";
+
+const key = `chat-media/${crypto.randomUUID()}-${file.originalname}`;
+
+    await b2.send(
+        new PutObjectCommand({
+            Bucket: process.env.B2_BUCKET_NAME,
+            Key: key,
+            Body: fs.createReadStream(file.path),
+            ContentType: file.mimetype,
+        })
+    );
+
+    fs.unlinkSync(file.path);
+
+    attachements.push({
+        key,
+        type,
+        mimeType: file.mimetype,
+        originalName: file.originalname,
+        size: file.size,
     });
-  
-   fs.unlinkSync(filepath);
-   fileUrl.push(result.secure_url);
-   console.log("File uploaded to Cloudinary:", result.secure_url);
 }
+ 
+
     const newMessage: IMessage = new Message({
         chatId,
         sender: loggedInUser,
         content,
-        filecontent: fileUrl,
+        attachements: attachements,
         status:status
     });
     console.log("Created new message object:", newMessage);
@@ -63,15 +98,20 @@ io.to(chatId).emit("receive_message", {
   chatId: newMessage.chatId,
   sender: newMessage.sender,
   content: newMessage.content,
-  filecontents:newMessage.filecontent,
+  attachements: formatAttachements(newMessage.attachements || []),
   createdAt: newMessage.createdAt,
   updatedAt: newMessage.updatedAt,
   status: newMessage.status,
 });
+chat.lastMessage = newMessage._id;
+await chat.save();
     res.status(201).json({
         success: true,
         message: "Message sent successfully",
-        data: newMessage,
+       data: {
+  ...newMessage.toObject(),
+  attachements: formatAttachements(newMessage.attachements || []),
+},
     });
 }
 export const UpdateMessage = async (req: Request, res: Response) => {
@@ -124,6 +164,7 @@ export const getAllChatMessages = async (req: Request, res: Response) => {
     if (!chatId) {
         throw new CustomError("chatId is required", 400);
     }
+    
     const messages: Array<IMessage> = await Message.find({ chatId });
     if (messages.length === 0) {
         return res.status(200).json({
@@ -132,10 +173,18 @@ export const getAllChatMessages = async (req: Request, res: Response) => {
             data: [],
         });
     }
+    // console.log("all messages of chat id :",messages)
+    //console.log("attachements:",messages[32].attachements);
+    const datas=messages.map((m) => ({
+  ...m.toObject(),
+  attachements: formatAttachements(m.attachements|| []),
+}));
+console.log('attachements are :');
+for(let i=0;i<messages.length;i++)console.log(datas[i].attachements);
     res.status(200).json({
         success: true,
         message: "Messages retrieved successfully",
-        data: messages,
+        data: datas,
     });
 }
 

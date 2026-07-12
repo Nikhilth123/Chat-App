@@ -11,6 +11,7 @@ import cookieParser from "cookie-parser";
 import user from './Routes/user'
 import message from './Routes/message';
 import { setIO } from './socket/socketInstance';
+import attachements from './Routes/attachements'
 const app:Application = express();
 app.use(express.json());
 app.use(cookieParser());
@@ -31,7 +32,7 @@ app.use('/api/auth',Auth);
 app.use('/api/chats',chat);
 app.use('/api/user',user);
 app.use('/api/messages',message);
-
+app.use('/api/attachements',attachements);
 app.use(errorHandler);
 const server=http.createServer(app);
 const io=new Server(server,{

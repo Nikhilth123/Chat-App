@@ -18,6 +18,8 @@ export const initSocketListeners = () => {
       chatId: msg.chatId,
       text: msg.content,
       senderId: msg.sender,
+      systemmessage:msg.systemmessage,
+      attachements:msg.attachements,
       createdAt: msg.createdAt,
       updatedAt: msg.updatedAt,
       status: msg.status ||[],

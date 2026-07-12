@@ -6,11 +6,12 @@ import { asyncHandler } from "../asyncHandler";
 import { upload } from '../Config/multer';
 const router = express.Router();
 
-router.post("/:chatId/send", authMiddleware, upload.single('file'), asyncHandler(sendMessage));
+router.post("/:chatId/send", authMiddleware, upload.array('attachments',10), asyncHandler(sendMessage));
 
 router.get("/:chatId", authMiddleware, asyncHandler(getAllChatMessages));
 router.put("/:messageId", authMiddleware, asyncHandler(UpdateMessage));
 
 router.post("/chat/:chatId/mark-seen", authMiddleware, asyncHandler(markMessagesAsSeen));
+
 
 export default router;

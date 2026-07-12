@@ -17,3 +17,9 @@ export const createpost=async(req:Request,res:Response)=>{
     });
     res.status(201).json({message:"Post created successfully",post});
 }
+export const getpost=async (req:Request,res:Response)=>{
+    
+}
+export const getuserpost=async(req:Request,res:Response)=>{
+    const {userid}=req.params;
+}

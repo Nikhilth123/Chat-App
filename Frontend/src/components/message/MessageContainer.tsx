@@ -4,7 +4,7 @@ import { useAppSelector } from "@/hooks/reduxhooks";
 import { useDispatch } from "react-redux";
 import { setMessages } from "@/redux/slice/messageslice";
 import { getsocket } from "@/services/socket";
-
+import { DateSeparator } from "./DateSaperator";
 export function MessagesContainer() {
   const dispatch = useDispatch();
 
@@ -13,6 +13,29 @@ export function MessagesContainer() {
   );
 
   const user = useAppSelector((state) => state.auth.user);
+
+  const getDateLabel = (date: string) => {
+  const messageDate = new Date(date);
+
+  const today = new Date();
+  const yesterday = new Date();
+  yesterday.setDate(today.getDate() - 1);
+
+  const isSameDay = (a: Date, b: Date) =>
+    a.getDate() === b.getDate() &&
+    a.getMonth() === b.getMonth() &&
+    a.getFullYear() === b.getFullYear();
+
+  if (isSameDay(messageDate, today)) return "Today";
+
+  if (isSameDay(messageDate, yesterday)) return "Yesterday";
+
+  return messageDate.toLocaleDateString([], {
+    day: "numeric",
+    month: "long",
+    year: "numeric",
+  });
+};
 
   // ===== GET MESSAGES =====
   const chatMessages = useAppSelector((state) =>
@@ -51,11 +74,12 @@ export function MessagesContainer() {
         text: msg.content,
         attachements:msg.attachements,
         senderId: msg.sender,
+        systemmessage:msg.systemmessage,
         createdAt: msg.createdAt,
         updatedAt: msg.updatedAt,
         status: msg.status || [], // ✅ IMPORTANT
       }));
-    console.log('messages is:',transformedMessages)
+    console.log('messages is mk:',transformedMessages)
       dispatch(
         setMessages({
           chatId: selectedChatId!,
@@ -134,20 +158,32 @@ export function MessagesContainer() {
     <div className="flex-1 overflow-y-auto p-4 space-y-3">
       
       {/* ===== MESSAGES ===== */}
-      {messages.map((msg, index) => {
-        const prevMsg = messages[index - 1];
+    {messages.map((msg, index) => {
+  const prevMsg = messages[index - 1];
 
-        const isGrouped =
-          prevMsg && prevMsg.senderId === msg.senderId;
+  const currentDate = getDateLabel(msg.createdAt);
+  const previousDate = prevMsg
+    ? getDateLabel(prevMsg.createdAt)
+    : null;
 
-        return (
-          <MessageBubble
-            key={msg._id}
-            message={msg}
-            isGrouped={isGrouped}
-          />
-        );
-      })}
+  const showDate = currentDate !== previousDate;
+
+  const isGrouped =
+    prevMsg &&
+    prevMsg.senderId === msg.senderId &&
+    currentDate === previousDate;
+
+  return (
+    <div key={msg._id}>
+      {showDate && <DateSeparator label={currentDate} />}
+
+      <MessageBubble
+        message={msg}
+        isGrouped={isGrouped}
+      />
+    </div>
+  );
+})}
 
       {/* ===== TYPING INDICATOR ===== */}
       {filteredTypingUsers.length > 0 && (

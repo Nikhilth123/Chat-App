@@ -10,6 +10,10 @@
   import { setCredentials } from './redux/slice/authslice'
 import { useAppDispatch } from './hooks/reduxhooks'
 import Createpost from './Pages/Createpost'
+import { dbPromise } from "./cache/db";
+import { GroupListLayout } from './layout/GroupListLayout'
+import {GroupLayout} from './layout/GroupLayout'
+
   function App() {
     const dispatch=useAppDispatch();
 
@@ -36,7 +40,11 @@ catch(err){
 useEffect(()=>{
   fetchuser();
 },[])
-
+useEffect(() => {
+  dbPromise.then(() => {
+    console.log("DB Opened");
+  });
+}, []);
   
 
     return (
@@ -55,8 +63,8 @@ useEffect(()=>{
         <Route path='/videocall' element={<ChatListLayout></ChatListLayout>}>
         <Route path=':id' element={<ChatLayout></ChatLayout>}/>
         </Route>
-        <Route path='/groupchat' element={<ChatListLayout></ChatListLayout>}>
-        <Route path=':id' element={<ChatLayout></ChatLayout>}/>
+        <Route path='/groupchat' element={<GroupListLayout></GroupListLayout>}>
+        <Route path=':id' element={<GroupLayout></GroupLayout>}/>
         </Route>
         <Route path='/profile'/>
         </Route>

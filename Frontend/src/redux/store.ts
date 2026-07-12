@@ -5,6 +5,7 @@ import messagereducer from './slice/messageslice'
 import chatreducer from './slice/chatslice'
 import socketreducer from './slice/socketslice'
 import realtimereducer from './slice/realtimeslice'   // ✅ ADD THIS
+import groupreducer from './slice/groupslice'
 
 const store = configureStore({
   reducer: {
@@ -12,7 +13,8 @@ const store = configureStore({
     chat: chatreducer,
     message: messagereducer,
     socket: socketreducer,
-    realtime: realtimereducer,   // ✅ ADD THIS
+    realtime: realtimereducer,  
+    groups:groupreducer // ✅ ADD THIS
   },
   devTools: true,
 })

@@ -15,7 +15,7 @@ export interface IChat extends Document {
   isGroupChat: boolean;
   participants: IChartParticipants[];
   groupName?: string;
-  groupAdmin?: Types.ObjectId;
+  groupAdmin?: Types.ObjectId[];
   lastMessage?:Types.ObjectId;
   createdAt: Date;
   updatedAt: Date;
@@ -47,10 +47,12 @@ const chatSchema = new Schema<IChat>(
       type: String,
       trim: true,
     },
-    groupAdmin: {
+    groupAdmin:[
+       {
       type: Schema.Types.ObjectId,
       ref: "User",
-    },
+    }
+  ],
      lastMessage: {
       type: Types.ObjectId,
       ref: "Message",
@@ -59,11 +61,19 @@ const chatSchema = new Schema<IChat>(
   { timestamps: true }
 );
 
+export interface IAttachement {
+  key: string;
+  type: "image" | "video" | "audio" | "file";
+  originalName: string;
+  size: number;
+  mimeType: string;
+}
+
 export interface IMessage extends Document {
   chatId: Types.ObjectId;
   sender: Types.ObjectId;
   content: string;
-  filecontent?: string[];
+  attachements?: IAttachement[];
   status:IMessageStatus[];
   createdAt: Date;
   updatedAt: Date;
@@ -85,11 +95,37 @@ const messageSchema = new Schema<IMessage>(
     content: {
       type: String,
       trim: true,
+      default: "",
     },
-    filecontent: {
-      type:String,
-      trim:true,
+   attachements: [
+  {
+    key: {
+      type: String,
+      required: true,
     },
+
+    type: {
+      type: String,
+      enum: ["image", "video", "audio", "file"],
+      required: true,
+    },
+
+    originalName: {
+      type: String,
+      required: true,
+    },
+
+    mimeType: {
+      type: String,
+      required: true,
+    },
+
+    size: {
+      type: Number,
+      required: true,
+    },
+  },
+],
    status: [
   {
     userId: {
