@@ -18,6 +18,8 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
+  DialogFooter,
+  DialogClose
 } from "@/components/ui/dialog"
 
 import { Button } from "@/components/ui/button";
@@ -51,30 +53,112 @@ export function GroupMessageHeader({ groupId }: { groupId?: string }) {
     const [users, setUsers] = useState<User[]>([]);
   
     const [participants, setParticipants] = useState<User[]>([]);
-
+       const removeadmin=async(userId:string)=>{
+      try{
+        const res= await fetch(`http://localhost:3000/api/group/groupchat/${groupId}/removeadmin`,{
+          method:"POST",
+          credentials :"include",
+          headers:{
+             "Content-Type": "application/json",
+          },
+          body:  JSON.stringify({
+            userId:userId,
+          }),
+        });
+        const data=await res.json();
+        dispatch(updateGroup(data.group));
+        console.log('admin made successfully:',data);
+      }
+      catch(err){
+        console.log(err);
+      }
+    }
     const makeadmin=async(userId:string)=>{
-        try{
-        const res = await fetch(
-        `http://localhost:3000/api/group/${groupId}/makeadmin`,
-        {
-          method: "POST",
+      try{
+        const res= await fetch(`http://localhost:3000/api/group/groupchat/${groupId}/makeadmin`,{
+          method:"POST",
+          credentials :"include",
+          headers:{
+             "Content-Type": "application/json",
+          },
+          body:  JSON.stringify({
+            userId:userId,
+          }),
+        });
+        const data=await res.json();
+        dispatch(updateGroup(data.group));
+        console.log('admin made successfully:',data);
+      }
+      catch(err){
+        console.log(err);
+      }
+    }
+
+    const removefromgroup=async(userId:string)=>{
+     if(userId==''){
+      console.log('inside left');
+      try{
+      const res=await fetch(`http://localhost:3000/api/group/groupchat/${groupId}/remove`,{
+        method:"POST",
           credentials: "include",
           headers: {
             "Content-Type": "application/json",
           },
-          body: JSON.stringify({
-            userId:userId,
-          }),
-        }
-      );
-       const data=await res.json();
+      });
+      const data=await res.json();
       dispatch(updateGroup(data.group));
-  console.log('donadone added participants:',data);
+      console.log('fd:',data);
     }
     catch(err){
-      console.log("err;",err);
+      console.log(err);
     }
+     }
+     else{
+      console.log('inside remove');
+       try{
+      const res=await fetch(`http://localhost:3000/api/group/groupchat/${groupId}/remove`,{
+        method:"POST",
+          credentials: "include",
+          headers: {
+            "Content-Type": "application/json",
+          },
+            body: JSON.stringify({
+            userId:userId,
+          }),
+      });
+      const data=await res.json();
+      dispatch(updateGroup(data.group));
+      console.log('fd:',data);
     }
+    catch(err){
+      console.log(err);
+    }
+     }
+    }
+
+  //   const makeadmin=async(userId:string)=>{
+  //       try{
+  //       const res = await fetch(
+  //       `http://localhost:3000/api/group/${groupId}/makeadmin`,
+  //       {
+  //         method: "POST",
+  //         credentials: "include",
+  //         headers: {
+  //           "Content-Type": "application/json",
+  //         },
+  //         body: JSON.stringify({
+  //           userId:userId,
+  //         }),
+  //       }
+  //     );
+  //      const data=await res.json();
+  //     dispatch(updateGroup(data.group));
+  // console.log('donadone added participants:',data);
+  //   }
+  //   catch(err){
+  //     console.log("err;",err);
+  //   }
+  //   }
   
   
     const addparticipants=async()=>{
@@ -322,13 +406,31 @@ export function GroupMessageHeader({ groupId }: { groupId?: string }) {
 </Dialog>
                     )}
 
-                    <Button
+                  
+                    <Dialog>
+  <DialogTrigger asChild>
+      <Button
                       variant="destructive"
                       className="w-full justify-start gap-2"
                     >
                       <LogOut size={18} />
                       Exit Group
                     </Button>
+
+  </DialogTrigger>
+  <DialogContent>
+    <DialogHeader>
+      <DialogTitle>Are you absolutely sure?</DialogTitle>
+      <DialogDescription>
+        This action cannot be undone unless anyone again add you in the group. This will keep you out from group.
+      </DialogDescription>
+    </DialogHeader>
+     <DialogFooter>
+            <DialogClose>  <Button>Cancel</Button></DialogClose>
+            <Button onClick={()=>removefromgroup('')} className="bg-red-600 hover:bg-red-700">Exit</Button>
+          </DialogFooter>
+  </DialogContent>
+</Dialog>
                   </div>
 
                   {/* Participants */}
@@ -388,20 +490,42 @@ export function GroupMessageHeader({ groupId }: { groupId?: string }) {
 
                                 <DropdownMenuContent align="end">
                                   {!participantIsAdmin && (
-                                    <DropdownMenuItem>
+                                    <DropdownMenuItem onClick={()=>makeadmin(p.user._id)}>
                                       Make Admin
                                     </DropdownMenuItem>
                                   )}
 
                                   {participantIsAdmin && (
-                                    <DropdownMenuItem>
+                                    <DropdownMenuItem onClick={()=>removeadmin(p.user._id)}>
                                       Remove Admin
+                                      
                                     </DropdownMenuItem>
                                   )}
 
-                                  <DropdownMenuItem className="text-red-600 focus:text-red-600">
-                                    Remove From Group
-                                  </DropdownMenuItem>
+                                  
+                                    
+                    <Dialog>
+  <DialogTrigger asChild>
+       <DropdownMenuItem className="text-red-600 focus:text-red-600"
+       onSelect={(e)=>e.preventDefault()}>
+                                 
+                                     Remove From Group
+ </DropdownMenuItem>
+  </DialogTrigger>
+  <DialogContent>
+    <DialogHeader>
+      <DialogTitle>Are you absolutely sure?</DialogTitle>
+      <DialogDescription>
+        This action cannot be undone unless anyone again add you in the group. This will keep you out from group.
+      </DialogDescription>
+    </DialogHeader>
+     <DialogFooter>
+            <DialogClose>  <Button>Cancel</Button></DialogClose>
+            <Button onClick={()=>removefromgroup(p.user._id.toString())} className="bg-red-600 hover:bg-red-700">Exit</Button>
+          </DialogFooter>
+  </DialogContent>
+</Dialog>
+                                 
                                 </DropdownMenuContent>
                               </DropdownMenu>
                             )}
