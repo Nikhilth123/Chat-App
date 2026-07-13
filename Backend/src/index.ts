@@ -12,6 +12,7 @@ import user from './Routes/user'
 import message from './Routes/message';
 import { setIO } from './socket/socketInstance';
 import attachements from './Routes/attachements'
+import group from './Routes/group';
 const app:Application = express();
 app.use(express.json());
 app.use(cookieParser());
@@ -27,12 +28,17 @@ connectDB()
 .catch((error)=>{
   console.error("Database connection failed:",error);
 });
+app.use((req, res, next) => {
+    console.log(req.method, req.url);
+    next();
+});
 app.use(urlencoded({extended:true}));
 app.use('/api/auth',Auth);
 app.use('/api/chats',chat);
 app.use('/api/user',user);
 app.use('/api/messages',message);
 app.use('/api/attachements',attachements);
+app.use('/api/group',group);
 app.use(errorHandler);
 const server=http.createServer(app);
 const io=new Server(server,{

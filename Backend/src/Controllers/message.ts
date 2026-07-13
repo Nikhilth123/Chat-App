@@ -84,6 +84,7 @@ const key = `chat-media/${crypto.randomUUID()}-${file.originalname}`;
     const newMessage: IMessage = new Message({
         chatId,
         sender: loggedInUser,
+        systemmessage:false,
         content,
         attachements: attachements,
         status:status
@@ -97,6 +98,7 @@ io.to(chatId).emit("receive_message", {
   _id: newMessage._id,
   chatId: newMessage.chatId,
   sender: newMessage.sender,
+    systemmessage:newMessage.systemmessage,
   content: newMessage.content,
   attachements: formatAttachements(newMessage.attachements || []),
   createdAt: newMessage.createdAt,
@@ -125,7 +127,7 @@ export const UpdateMessage = async (req: Request, res: Response) => {
     if (!message) {
         throw new CustomError("Message not found", 404);
     }
-    if (message.sender.toString() !== loggedInUser.toString()) {
+    if (message.sender!.toString() !== loggedInUser.toString()) {
         throw new CustomError("Unauthorized to update this message", 403);
     }
     message.content = content;
@@ -147,7 +149,7 @@ export const deleteMessage = async (req: Request, res: Response) => {
     if (!message) {
         throw new CustomError("Message not found", 404);
     }
-    if (message.sender.toString() !== loggedInUser.toString()) {
+    if (message.sender!.toString() !== loggedInUser.toString()) {
         throw new CustomError("Unauthorized to delete this message", 403);
     }
     await Message.deleteOne({ _id: messageId });

@@ -71,7 +71,8 @@ export interface IAttachement {
 
 export interface IMessage extends Document {
   chatId: Types.ObjectId;
-  sender: Types.ObjectId;
+  sender?: Types.ObjectId;
+  systemmessage:boolean,
   content: string;
   attachements?: IAttachement[];
   status:IMessageStatus[];
@@ -90,7 +91,10 @@ const messageSchema = new Schema<IMessage>(
     sender: {
       type: Schema.Types.ObjectId,
       ref: "User",
-      required: true,
+    },
+    systemmessage:{
+      type:Boolean,
+      default:false,
     },
     content: {
       type: String,
